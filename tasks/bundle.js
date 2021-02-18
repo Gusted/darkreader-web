@@ -1,5 +1,5 @@
-//@ts-check
-const {typeCheck} = require('./type-check'); 
+// @ts-check
+const {typeCheck} = require('./type-check');
 const {bundleJS} = require('./bundle-js');
 
 async function main() {
