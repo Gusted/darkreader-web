@@ -11,7 +11,8 @@
         ],
         "allowJs": true,
         "downlevelIteration": true,
-        "noEmit": true
+        "noEmit": true,
+        "incremental": true
     },
     "exclude": [
         "node_modules"
