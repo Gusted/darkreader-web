@@ -1,0 +1,20 @@
+{
+  "name": "darkreader-web",
+  "version": "1.0.0",
+  "description": "Dark Reader's web wrapper",
+  "author": "Gusted <williamzijl7@hotmail.com>",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "node tasks/bundle.js",
+    "release": "node tasks/bundle.js --release",
+    "serve": "serve"
+  },
+  "devDependencies": {
+    "@types/node": "14.14.28",
+    "esbuild": "0.8.46",
+    "serve": "11.3.2",
+    "typescript": "4.1.5"
+  }
+}
