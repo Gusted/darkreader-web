@@ -11,6 +11,10 @@ async function main() {
     glob.sync('src/ui/**/*').forEach((path) => {
         fs.copyFileSync(path, `public/${path.substring(path.lastIndexOf('/'))}`);
     });
+    fs.mkdirSync('public/assets');
+    glob.sync('assets/**/*').forEach((path) => {
+        fs.copyFileSync(path, `public/${path}`);
+    });
 }
 
 main();

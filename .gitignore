@@ -2,4 +2,3 @@ node_modules/
 yarn-error.log
 .eslintcache
 tsconfig.tsbuildinfo
-public/
