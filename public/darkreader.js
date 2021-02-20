@@ -4169,7 +4169,7 @@
         IFrames.forEach(function (IFrame) {
             IFrames = __spread(IFrames, getAllIFrames(IFrame.contentDocument));
         });
-        return IFrames;
+        return IFrames.filter(function (IFrame) { return IFrame.contentWindow.location.origin === window.location.origin; });
     }
     var IFrameDetectedCallback = null;
     var isEnabled;
@@ -4180,36 +4180,32 @@
         setupIFrameObserver(contentDocument);
         IFrame.setAttribute('isdarkreaderactived', '1');
         if (isEnabled()) {
-            if (IFrame.contentWindow.DarkReader) {
-                contentDocument.dispatchEvent(new CustomEvent('__darkreader__enableDynamicTheme', { detail: getStore() }));
-            }
-            else {
-                var dispatchCustomEvent_1 = function () {
-                    if (isEnabled()) {
-                        contentDocument.dispatchEvent(new CustomEvent('__darkreader__enableDynamicTheme', { detail: getStore() }));
-                        contentDocument.removeEventListener('__darkreader__IAmReady', dispatchCustomEvent_1);
-                    }
-                };
-                contentDocument.addEventListener('__darkreader__IAmReady', dispatchCustomEvent_1);
-            }
+            contentDocument.dispatchEvent(new CustomEvent('__darkreader__enableDynamicTheme', { detail: getStore() }));
+            var dispatchCustomEvent_1 = function () {
+                if (isEnabled()) {
+                    contentDocument.dispatchEvent(new CustomEvent('__darkreader__enableDynamicTheme', { detail: getStore() }));
+                    contentDocument.removeEventListener('__darkreader__IAmReady', dispatchCustomEvent_1);
+                }
+            };
+            contentDocument.addEventListener('__darkreader__IAmReady', dispatchCustomEvent_1);
         }
     };
-    var isDOMReady$1 = function (IFrameDocument) { return IFrameDocument.readyState === 'complete' || IFrameDocument.readyState === 'interactive'; };
     var onMutation = function (workingDocument) {
-        getAllIFrames(workingDocument).forEach(function (IFrame) {
-            if (!IFrame.getAttribute('isdarkreaderactived')) {
-                var onReadyStateChange_1 = function () {
-                    if (isDOMReady$1(IFrame.contentDocument)) {
-                        IFrame.contentDocument.removeEventListener('readystatechange', onReadyStateChange_1);
-                        IFrame.removeEventListener('load', onReadyStateChange_1);
-                        onNewIFrame(IFrame);
-                    }
-                };
-                IFrame.contentDocument.addEventListener('readystatechange', onReadyStateChange_1);
-                IFrame.addEventListener('load', onReadyStateChange_1);
-                onReadyStateChange_1();
-            }
-        });
+        getAllIFrames(workingDocument).forEach(function (IFrame) { return __awaiter(void 0, void 0, void 0, function () {
+            var loadedIFrame;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!!IFrame.getAttribute('isdarkreaderactived')) return [3, 2];
+                        return [4, ensureIFrameIsLoaded(IFrame)];
+                    case 1:
+                        loadedIFrame = _a.sent();
+                        onNewIFrame(loadedIFrame);
+                        _a.label = 2;
+                    case 2: return [2];
+                }
+            });
+        }); });
     };
     function setupIFrameData(listener, getOptions, isDarkReaderEnabled) {
         IFrameDetectedCallback = listener;
@@ -4225,6 +4221,33 @@
         });
         observer.observe(observerDocument.documentElement, { childList: true, subtree: true });
     }
+    function ensureIFrameIsLoaded(IFrame) {
+        return __awaiter(this, void 0, void 0, function () {
+            var isLoaded;
+            return __generator(this, function (_a) {
+                isLoaded = function (IFrame) { return IFrame.contentDocument && (IFrame.contentDocument.readyState === 'complete' || IFrame.contentDocument.readyState === 'interactive'); };
+                return [2, new Promise(function (resolve) {
+                        if (isLoaded(IFrame)) {
+                            return resolve(IFrame);
+                        }
+                        else {
+                            var onLoaded_1 = function () {
+                                if (isLoaded(IFrame)) {
+                                    IFrame.removeEventListener('load', onLoaded_1);
+                                    IFrame.contentDocument.removeEventListener('readystatechange', onLoaded_1);
+                                    IFrame.contentWindow.removeEventListener('load', onLoaded_1);
+                                    resolve(IFrame);
+                                }
+                            };
+                            IFrame.addEventListener('load', onLoaded_1);
+                            IFrame.contentDocument && IFrame.contentDocument.addEventListener('readystatechange', onLoaded_1);
+                            IFrame.contentWindow && IFrame.contentWindow.window && IFrame.contentWindow.window.addEventListener('load', onLoaded_1);
+                            onLoaded_1();
+                        }
+                    })];
+            });
+        });
+    }
 
     var isDarkReaderEnabled = false;
     var isIFrame$1 = (function () {
@@ -4237,6 +4260,7 @@
         }
     })();
     function enable(themeOptions, fixes) {
+        var _this = this;
         if (themeOptions === void 0) { themeOptions = {}; }
         if (fixes === void 0) { fixes = null; }
         var theme = __assign(__assign({}, DEFAULT_THEME), themeOptions);
@@ -4247,16 +4271,27 @@
         createOrUpdateDynamicTheme(theme, fixes, isIFrame$1);
         isDarkReaderEnabled = true;
         var enableDynamicThemeEvent = new CustomEvent('__darkreader__enableDynamicTheme', { detail: { theme: theme, fixes: fixes } });
-        getAllIFrames(document).forEach(function (IFrame) { return IFrame.contentDocument.dispatchEvent(enableDynamicThemeEvent); });
+        getAllIFrames(document).forEach(function (IFrame) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4, ensureIFrameIsLoaded(IFrame)];
+                case 1: return [2, (_a.sent()).contentDocument.dispatchEvent(enableDynamicThemeEvent)];
+            }
+        }); }); });
     }
     function isEnabled$1() {
         return isDarkReaderEnabled;
     }
     function disable() {
+        var _this = this;
         removeDynamicTheme();
         isDarkReaderEnabled = false;
         var removeDynamicThemeEvent = new CustomEvent('__darkreader__removeDynamicTheme');
-        getAllIFrames(document).forEach(function (IFrame) { return IFrame.contentDocument.dispatchEvent(removeDynamicThemeEvent); });
+        getAllIFrames(document).forEach(function (IFrame) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4, ensureIFrameIsLoaded(IFrame)];
+                case 1: return [2, (_a.sent()).contentDocument.dispatchEvent(removeDynamicThemeEvent)];
+            }
+        }); }); });
     }
     var darkScheme = matchMedia('(prefers-color-scheme: dark)');
     var store = {

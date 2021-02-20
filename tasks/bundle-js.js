@@ -11,7 +11,7 @@ async function bundleJS(release) {
         charset: 'utf8',
         format: 'iife',
         write: true,
-        outfile: 'index.js',
+        outfile: 'public/index.js',
         entryPoints: ['src/index.ts'],
         banner: '"use strict";',
         logLevel: 'info',

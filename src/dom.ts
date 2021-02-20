@@ -8,7 +8,6 @@ export function addDOMReadyListener(listener: () => void) {
     readyStateListeners.add(listener);
 }
 
-
 if (!isDOMReady()) {
     const onReadyStateChange = () => {
         if (isDOMReady()) {

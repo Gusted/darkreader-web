@@ -1,8 +1,6 @@
 import {addDOMReadyListener, isDOMReady} from './dom';
 
 async function setup() {
-    // const shadowRootDiv = document.querySelector('.site-wrapper');
-    // shadowRootDiv.attachShadow({mode: 'open'});
     const parsedURL = new URL(window.location.href);
     if (!parsedURL.searchParams.get('url')) {
         throw new Error('URL not found');
@@ -11,7 +9,7 @@ async function setup() {
     IFrameSiteWrapper.addEventListener('load', () => {
         console.log('aaaa');
     });
-    IFrameSiteWrapper.src = `http://127.0.0.1:8080/${parsedURL.searchParams.get('url')}`;
+    IFrameSiteWrapper.src = `${window.location.origin}/proxy/${parsedURL.searchParams.get('url')}`;
     (window as any).DarkReader.enable();
     (window as any).DarkReader.setupIFrameListener((IFrameDocument: Document) => {
         const newScript = IFrameDocument.createElement('script');
