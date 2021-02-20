@@ -3,6 +3,7 @@ const corsAnywhereIframe = require('cors-anywhere-iframe');
 const proxyHandler = corsAnywhereIframe.getHandler({}, httpProxy.createServer());
 
 module.exports = (req, res) => {
-    req.url = req.url.slice(14);
+    console.log(req.url);
+    req.url = req.url.slice(11);
     proxyHandler(req, res);
 }
