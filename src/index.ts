@@ -14,7 +14,7 @@ const setup = () => {
         newScript.textContent = '';
         IFrameDocument.head.append(newScript);
     });
-}
+};
 
 if (isDOMReady()) {
     setup();
