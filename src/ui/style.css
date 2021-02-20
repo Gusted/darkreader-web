@@ -1,13 +1,16 @@
 body {
     height: 100%;
-    overflow: hidden;
-    width: 100%;
     margin: 0px;
+    overflow: hidden;
     padding: 0px;
+    width: 100%;
 }
 .topbar {
-    margin-top: 0px;
+    align-items: center;
+    display: flex;
     height: 60px;
+    left: 1em;
+    margin-top: 0px;
     position: relative;
 }
 .site-wrapper {
@@ -18,4 +21,18 @@ body {
 }
 .loading {
     background-color: rgb(32, 31, 31);
+}
+.search-bar {
+    border-radius: 25px;
+    height: 70%;
+    position: relative;
+    text-indent: 5px;
+    width: 215px;
+}
+.submit {
+    border-color: transparent transparent transparent aquamarine;
+    border-radius: 0px 25px 25px 0px;
+    height: 70%;
+    left: 155px;
+    position: absolute;
 }
