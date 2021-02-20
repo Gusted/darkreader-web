@@ -15,7 +15,7 @@ const setup = () => {
     const workingURL = parsedURL.searchParams.get('url');
     const IFrameSiteWrapper = document.querySelector('.site-wrapper') as HTMLIFrameElement;
     IFrameSiteWrapper.src = `${window.location.origin}/api/proxy?${workingURL}`;
-    const searchBar = document.querySelector('.search-bar') as HTMLInputElement;
+    const searchBar = document.querySelector('.search-bar') as HTMLButtonElement;
     searchBar.value = workingURL;
 };
 
