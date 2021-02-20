@@ -2,7 +2,7 @@
 const {build} = require('esbuild');
 
 /**
- * @param {boolean} release
+ * @param {boolean} release Enable release specific flags.
  */
 async function bundleJS(release) {
     await build({

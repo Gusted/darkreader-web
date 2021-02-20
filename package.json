@@ -7,9 +7,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "node tasks/bundle.js --release",
+    "build": "node tasks/bundle.js",
     "code-style": "eslint --cache --fix \"src/**/*.ts\" \"tasks/**/*.js\" \".eslintrc.js\"",
-    "debug": "node tasks/bundle.js",
+    "release": "node tasks/bundle.js --release",
     "serve": "node tasks/http-server.js"
   },
   "dependencies": {
