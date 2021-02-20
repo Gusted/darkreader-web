@@ -4,7 +4,22 @@ const corsAnywhereIframe = require('cors-anywhere-iframe');
 
 
 const serveHandler = require('serve-handler');
-const proxyHandler = corsAnywhereIframe.getHandler({}, httpProxy.createServer());
+
+const proxyServer = httpProxy.createServer();
+proxyServer.on('error', (err, _, res) => {
+    if (res.headersSent) {
+        if (!res.writableEnded) {
+            res.end();
+        }
+        return;
+    }
+    const headerNames = res.getHeaderNames ? res.getHeaderNames() : Object.keys(res.getHeaders() || {});
+    headerNames.forEach((name) => res.removeHeader(name));
+    res.writeHead(404, {'Access-Control-Allow-Origin': '*'});
+    res.end('Not found because of proxy error: ' + err);
+});
+
+const proxyHandler = corsAnywhereIframe.getHandler({}, proxyServer);
 
 // TO-DO Customize ports/hostname.
 http.createServer((req, res) => {

@@ -1,6 +1,6 @@
 import {addDOMReadyListener, isDOMReady} from './dom';
 
-async function setup() {
+const setup = () => {
     const parsedURL = new URL(window.location.href);
     if (!parsedURL.searchParams.get('url')) {
         return;
@@ -19,5 +19,5 @@ async function setup() {
 if (isDOMReady()) {
     setup();
 } else {
-    addDOMReadyListener(async () => setup());
+    addDOMReadyListener(setup);
 }

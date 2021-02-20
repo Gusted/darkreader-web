@@ -4169,7 +4169,7 @@
         IFrames.forEach(function (IFrame) {
             IFrames = __spread(IFrames, getAllIFrames(IFrame.contentDocument));
         });
-        return IFrames.filter(function (IFrame) { return IFrame.contentWindow.location.origin === window.location.origin; });
+        return IFrames;
     }
     var IFrameDetectedCallback = null;
     var isEnabled;
@@ -4191,21 +4191,11 @@
         }
     };
     var onMutation = function (workingDocument) {
-        getAllIFrames(workingDocument).forEach(function (IFrame) { return __awaiter(void 0, void 0, void 0, function () {
-            var loadedIFrame;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (!!IFrame.getAttribute('isdarkreaderactived')) return [3, 2];
-                        return [4, ensureIFrameIsLoaded(IFrame)];
-                    case 1:
-                        loadedIFrame = _a.sent();
-                        onNewIFrame(loadedIFrame);
-                        _a.label = 2;
-                    case 2: return [2];
-                }
-            });
-        }); });
+        getAllIFrames(workingDocument).forEach(function (IFrame) {
+            if (!IFrame.getAttribute('isdarkreaderactived')) {
+                ensureIFrameIsLoaded(IFrame, function () { return !IFrame.getAttribute('isdarkreaderactived') && onNewIFrame(IFrame); });
+            }
+        });
     };
     function setupIFrameData(listener, getOptions, isDarkReaderEnabled) {
         IFrameDetectedCallback = listener;
@@ -4221,35 +4211,39 @@
         });
         observer.observe(observerDocument.documentElement, { childList: true, subtree: true });
     }
-    function ensureIFrameIsLoaded(IFrame) {
-        return __awaiter(this, void 0, void 0, function () {
-            var isLoaded;
-            return __generator(this, function (_a) {
-                isLoaded = function (IFrame) { return IFrame.contentDocument && (IFrame.contentDocument.readyState === 'complete' || IFrame.contentDocument.readyState === 'interactive'); };
-                return [2, new Promise(function (resolve) {
-                        if (isLoaded(IFrame)) {
-                            return resolve(IFrame);
-                        }
-                        else {
-                            var onLoaded_1 = function () {
-                                if (isLoaded(IFrame)) {
-                                    IFrame.removeEventListener('load', onLoaded_1);
-                                    IFrame.contentDocument.removeEventListener('readystatechange', onLoaded_1);
-                                    IFrame.contentWindow.removeEventListener('load', onLoaded_1);
-                                    resolve(IFrame);
-                                }
-                            };
-                            IFrame.addEventListener('load', onLoaded_1);
-                            IFrame.contentDocument && IFrame.contentDocument.addEventListener('readystatechange', onLoaded_1);
-                            IFrame.contentWindow && IFrame.contentWindow.window && IFrame.contentWindow.window.addEventListener('load', onLoaded_1);
-                            onLoaded_1();
-                        }
-                    })];
-            });
+    function ensureIFrameIsLoaded(IFrame, callback) {
+        var timeoutID;
+        var fired = false;
+        function ready() {
+            if (!fired) {
+                fired = true;
+                clearTimeout(timeoutID);
+                callback(IFrame.contentDocument);
+            }
+        }
+        IFrame.addEventListener('load', function () {
+            ready();
         });
+        function checkLoaded() {
+            var doc = IFrame.contentDocument;
+            if (doc.URL.indexOf('about:') !== 0) {
+                if (doc.readyState === 'complete') {
+                    ready.call(doc);
+                }
+                else {
+                    doc.addEventListener('DOMContentLoaded', ready);
+                    doc.addEventListener('readystatechange', ready);
+                }
+            }
+            else {
+                timeoutID = setTimeout(checkLoaded);
+            }
+        }
+        checkLoaded();
     }
 
     var isDarkReaderEnabled = false;
+    var usesIFrames = false;
     var isIFrame$1 = (function () {
         try {
             return window.self !== window.top;
@@ -4260,7 +4254,6 @@
         }
     })();
     function enable(themeOptions, fixes) {
-        var _this = this;
         if (themeOptions === void 0) { themeOptions = {}; }
         if (fixes === void 0) { fixes = null; }
         var theme = __assign(__assign({}, DEFAULT_THEME), themeOptions);
@@ -4271,27 +4264,16 @@
         createOrUpdateDynamicTheme(theme, fixes, isIFrame$1);
         isDarkReaderEnabled = true;
         var enableDynamicThemeEvent = new CustomEvent('__darkreader__enableDynamicTheme', { detail: { theme: theme, fixes: fixes } });
-        getAllIFrames(document).forEach(function (IFrame) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4, ensureIFrameIsLoaded(IFrame)];
-                case 1: return [2, (_a.sent()).contentDocument.dispatchEvent(enableDynamicThemeEvent)];
-            }
-        }); }); });
+        usesIFrames && getAllIFrames(document).forEach(function (IFrame) { return ensureIFrameIsLoaded(IFrame, function (IFrameDocument) { return IFrameDocument.dispatchEvent(enableDynamicThemeEvent); }); });
     }
     function isEnabled$1() {
         return isDarkReaderEnabled;
     }
     function disable() {
-        var _this = this;
         removeDynamicTheme();
         isDarkReaderEnabled = false;
         var removeDynamicThemeEvent = new CustomEvent('__darkreader__removeDynamicTheme');
-        getAllIFrames(document).forEach(function (IFrame) { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0: return [4, ensureIFrameIsLoaded(IFrame)];
-                case 1: return [2, (_a.sent()).contentDocument.dispatchEvent(removeDynamicThemeEvent)];
-            }
-        }); }); });
+        usesIFrames && getAllIFrames(document).forEach(function (IFrame) { return ensureIFrameIsLoaded(IFrame, function (IFrameDocument) { return IFrameDocument.dispatchEvent(removeDynamicThemeEvent); }); });
     }
     var darkScheme = matchMedia('(prefers-color-scheme: dark)');
     var store = {
@@ -4345,6 +4327,7 @@
         if (!listener || listener.length !== 1) {
             throw new Error('Must provide an listener with 1 argument, the literatal template should follow "(IFrameDocument: Document) => void".');
         }
+        usesIFrames = true;
         setupIFrameObserver();
         setupIFrameData(listener, getStore$1, function () { return isDarkReaderEnabled; });
     }

@@ -8,7 +8,7 @@
   "private": true,
   "scripts": {
     "build": "node tasks/bundle.js",
-    "code-style": "eslint --cache --fix \"src/**/*.ts\" \"tasks/**/*.js\" \".eslintrc.js\"",
+    "code-style": "eslint --cache --fix \"src/**/*.ts\" \"tasks/**/*.js\" \"api/**/*.js\" \".eslintrc.js\"",
     "release": "node tasks/bundle.js --release",
     "serve": "node tasks/http-server.js"
   },
