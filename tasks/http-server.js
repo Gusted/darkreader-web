@@ -30,5 +30,5 @@ http.createServer((req, res) => {
         serveHandler(req, res, {public: 'public'});
     }
 }).listen(5000, '0.0.0.0', () => {
-    console.log(`Dark Reader's web app & Proxy is live at 0.0.0.0:5000`);
+    console.log(`Dark Reader's web app & Proxy is live at http://0.0.0.0:5000/`);
 });

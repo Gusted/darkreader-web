@@ -299,7 +299,7 @@ content-disposition@0.5.2:
 
 "cors-anywhere-iframe@github:gusted/cors-anywhere-iframe":
   version "1.0.0"
-  resolved "https://codeload.github.com/gusted/cors-anywhere-iframe/tar.gz/78799212cbc3c45f082610e1cdae4607b7b19b03"
+  resolved "https://codeload.github.com/gusted/cors-anywhere-iframe/tar.gz/5f16ea972c10f3400964aca9819ef1ad76c99293"
   dependencies:
     http-proxy "1.18.1"
     proxy-from-env "1.1.0"

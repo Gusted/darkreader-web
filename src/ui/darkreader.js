@@ -212,6 +212,97 @@
         });
     }
 
+    function getAllIFrames(workingDocument) {
+        if (!workingDocument) {
+            return [];
+        }
+        var IFrames = [];
+        IFrames = __spread(IFrames, workingDocument.getElementsByTagName('iframe'));
+        IFrames.forEach(function (IFrame) {
+            IFrames = __spread(IFrames, getAllIFrames(IFrame.contentDocument));
+        });
+        return IFrames;
+    }
+    var IFrameDetectedCallback = null;
+    var isEnabled;
+    var getStore;
+    var onNewIFrame = function (IFrame) {
+        var contentDocument = IFrame.contentDocument;
+        IFrameDetectedCallback(contentDocument);
+        setupIFrameObserver(contentDocument);
+        IFrame.setAttribute('isdarkreaderactived', '1');
+        if (isEnabled()) {
+            contentDocument.dispatchEvent(new CustomEvent('__darkreader__enableDynamicTheme', { detail: getStore() }));
+            var dispatchCustomEvent_1 = function () {
+                if (isEnabled()) {
+                    contentDocument.dispatchEvent(new CustomEvent('__darkreader__enableDynamicTheme', { detail: getStore() }));
+                    contentDocument.removeEventListener('__darkreader__IAmReady', dispatchCustomEvent_1);
+                }
+            };
+            contentDocument.addEventListener('__darkreader__IAmReady', dispatchCustomEvent_1);
+        }
+    };
+    var onMutation = function (workingDocument) {
+        getAllIFrames(workingDocument).forEach(function (IFrame) {
+            if (!IFrame.getAttribute('isdarkreaderactived')) {
+                ensureIFrameIsLoaded(IFrame, function () { return !IFrame.getAttribute('isdarkreaderactived') && onNewIFrame(IFrame); });
+            }
+        });
+    };
+    function setupIFrameData(listener, getOptions, isDarkReaderEnabled) {
+        IFrameDetectedCallback = listener;
+        getStore = getOptions;
+        isEnabled = isDarkReaderEnabled;
+        onMutation(document);
+    }
+    function setupIFrameObserver(workingDocument) {
+        if (workingDocument === void 0) { workingDocument = document; }
+        var observerDocument = workingDocument;
+        var observer = new MutationObserver(function () {
+            onMutation(observerDocument);
+        });
+        observer.observe(observerDocument.documentElement, { childList: true, subtree: true });
+    }
+    function ensureIFrameIsLoaded(IFrame, callback) {
+        var timeoutID;
+        var fired = false;
+        function ready() {
+            if (!fired) {
+                fired = true;
+                clearTimeout(timeoutID);
+                callback(IFrame.contentDocument);
+            }
+        }
+        IFrame.addEventListener('load', function () {
+            ready();
+        });
+        function checkLoaded() {
+            var doc = IFrame.contentDocument;
+            if (doc && doc.URL.indexOf('about:') !== 0) {
+                if (doc.readyState === 'complete') {
+                    ready.call(doc);
+                }
+                else {
+                    doc.addEventListener('DOMContentLoaded', ready);
+                    doc.addEventListener('readystatechange', ready);
+                }
+            }
+            else {
+                timeoutID = setTimeout(checkLoaded);
+            }
+        }
+        checkLoaded();
+    }
+    var isIFrame = (function () {
+        try {
+            return window.self !== window.top;
+        }
+        catch (err) {
+            console.warn(err);
+            return true;
+        }
+    })();
+
     var throwCORSError = function (url) { return __awaiter(void 0, void 0, void 0, function () {
         return __generator(this, function (_a) {
             return [2, Promise.reject(new Error([
@@ -233,15 +324,99 @@
             fetcher = throwCORSError;
         }
     }
-    function callFetchMethod(url) {
+    function callFetchMethod(url, responseType) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, fetcher(url)];
+                    case 0:
+                        if (!isIFrame) return [3, 2];
+                        return [4, apiFetch(url, responseType)];
                     case 1: return [2, _a.sent()];
+                    case 2: return [4, fetcher(url)];
+                    case 3: return [2, _a.sent()];
                 }
             });
         });
+    }
+    var counter = 0;
+    var resolvers = new Map();
+    function apiFetch(url, responseType) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                return [2, new Promise(function (resolve) {
+                        var id = ++counter + "-" + window.location.href;
+                        resolvers.set(id, resolve);
+                        window.top.postMessage({ type: 'fetch-api', url: url, id: id, responseType: responseType });
+                    })];
+            });
+        });
+    }
+    if (isIFrame) {
+        window.addEventListener('message', function (event) { return __awaiter(void 0, void 0, void 0, function () {
+            var _a, type, data, id, resolve;
+            return __generator(this, function (_b) {
+                _a = event.data, type = _a.type, data = _a.data, id = _a.id;
+                if (type !== 'fetch-api-response' || event.origin !== window.location.origin) {
+                    return [2];
+                }
+                else {
+                    resolve = resolvers.get(id);
+                    resolvers.delete(id);
+                    resolve && resolve(data);
+                }
+                return [2];
+            });
+        }); });
+    }
+    function readResponseAsDataURL$1(response) {
+        return __awaiter(this, void 0, void 0, function () {
+            var blob, dataURL;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, response.blob()];
+                    case 1:
+                        blob = _a.sent();
+                        return [4, (new Promise(function (resolve) {
+                                var reader = new FileReader();
+                                reader.onloadend = function () { return resolve(reader.result); };
+                                reader.readAsDataURL(blob);
+                            }))];
+                    case 2:
+                        dataURL = _a.sent();
+                        return [2, dataURL];
+                }
+            });
+        });
+    }
+    if (!isIFrame) {
+        window.addEventListener('message', function (event) { return __awaiter(void 0, void 0, void 0, function () {
+            var _a, type, url, id, responseType, response, data;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = event.data, type = _a.type, url = _a.url, id = _a.id, responseType = _a.responseType;
+                        if (!(type !== 'fetch-api' || event.origin !== window.location.origin)) return [3, 1];
+                        return [2];
+                    case 1: return [4, fetcher(url)];
+                    case 2:
+                        response = _b.sent();
+                        data = void 0;
+                        if (!(responseType === 'data-url')) return [3, 4];
+                        return [4, readResponseAsDataURL$1(response)];
+                    case 3:
+                        data = _b.sent();
+                        return [3, 6];
+                    case 4: return [4, response.text()];
+                    case 5:
+                        data = _b.sent();
+                        _b.label = 6;
+                    case 6:
+                        event.source.postMessage({ type: 'fetch-api-response', data: data, id: id }, event.origin);
+                        _b.label = 7;
+                    case 7: return [2];
+                }
+            });
+        }); });
     }
 
     if (!window.chrome) {
@@ -261,33 +436,37 @@
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        if (!(args[0] && args[0].type === 'fetch')) return [3, 8];
+                        if (!(args[0] && args[0].type === 'fetch')) return [3, 9];
                         id_1 = args[0].id;
                         _b.label = 1;
                     case 1:
-                        _b.trys.push([1, 7, , 8]);
+                        _b.trys.push([1, 8, , 9]);
                         _a = args[0].data, url = _a.url, responseType = _a.responseType;
-                        return [4, callFetchMethod(url)];
+                        return [4, callFetchMethod(url, responseType)];
                     case 2:
                         response = _b.sent();
-                        if (!(responseType === 'data-url')) return [3, 4];
-                        return [4, readResponseAsDataURL(response)];
+                        if (!(typeof response === 'string')) return [3, 3];
+                        text_1 = response;
+                        return [3, 7];
                     case 3:
+                        if (!(responseType === 'data-url')) return [3, 5];
+                        return [4, readResponseAsDataURL(response)];
+                    case 4:
                         text_1 = _b.sent();
-                        return [3, 6];
-                    case 4: return [4, response.text()];
-                    case 5:
-                        text_1 = _b.sent();
-                        _b.label = 6;
+                        return [3, 7];
+                    case 5: return [4, response.text()];
                     case 6:
-                        messageListeners.forEach(function (cb) { return cb({ type: 'fetch-response', data: text_1, error: null, id: id_1 }); });
-                        return [3, 8];
+                        text_1 = _b.sent();
+                        _b.label = 7;
                     case 7:
+                        messageListeners.forEach(function (cb) { return cb({ type: 'fetch-response', data: text_1, error: null, id: id_1 }); });
+                        return [3, 9];
+                    case 8:
                         err_1 = _b.sent();
                         console.error(err_1);
                         messageListeners.forEach(function (cb) { return cb({ type: 'fetch-response', data: null, err: err_1, id: id_1 }); });
-                        return [3, 8];
-                    case 8: return [2];
+                        return [3, 9];
+                    case 9: return [2];
                 }
             });
         });
@@ -1682,15 +1861,15 @@
         return toSVGMatrix(createFilterMatrix(config));
     }
 
-    var counter = 0;
-    var resolvers = new Map();
+    var counter$1 = 0;
+    var resolvers$1 = new Map();
     var rejectors = new Map();
     function bgFetch(request) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 return [2, new Promise(function (resolve, reject) {
-                        var id = ++counter;
-                        resolvers.set(id, resolve);
+                        var id = ++counter$1;
+                        resolvers$1.set(id, resolve);
                         rejectors.set(id, reject);
                         chrome.runtime.sendMessage({ type: 'fetch', data: request, id: id });
                     })];
@@ -1700,9 +1879,9 @@
     chrome.runtime.onMessage.addListener(function (_a) {
         var type = _a.type, data = _a.data, error = _a.error, id = _a.id;
         if (type === 'fetch-response') {
-            var resolve = resolvers.get(id);
+            var resolve = resolvers$1.get(id);
             var reject = rejectors.get(id);
-            resolvers.delete(id);
+            resolvers$1.delete(id);
             rejectors.delete(id);
             if (error) {
                 reject && reject(error);
@@ -3345,11 +3524,11 @@
     document.addEventListener('__darkreader__inlineScriptsAllowed', function () {
         canOptimizeUsingProxy$1 = true;
     });
-    var resolvers$1 = new Map();
+    var resolvers$2 = new Map();
     function handleIsDefined(e) {
         canOptimizeUsingProxy$1 = true;
-        if (resolvers$1.has(e.detail.tag)) {
-            var resolve = resolvers$1.get(e.detail.tag);
+        if (resolvers$2.has(e.detail.tag)) {
+            var resolve = resolvers$2.get(e.detail.tag);
             resolve();
         }
     }
@@ -3361,7 +3540,7 @@
                             customElements.whenDefined(tag).then(resolve);
                         }
                         else if (canOptimizeUsingProxy$1) {
-                            resolvers$1.set(tag, resolve);
+                            resolvers$2.set(tag, resolve);
                             document.dispatchEvent(new CustomEvent('__darkreader__addUndefinedResolver', { detail: { tag: tag } }));
                         }
                         else {
@@ -3667,7 +3846,7 @@
     var adoptedStyleManagers = [];
     var filter = null;
     var fixes = null;
-    var isIFrame = null;
+    var isIFrame$1 = null;
     var ignoredImageAnalysisSelectors = null;
     var ignoredInlineSelectors = null;
     function createOrUpdateStyle(className, root) {
@@ -3706,7 +3885,7 @@
         document.head.insertBefore(fallbackStyle, document.head.firstChild);
         setupNodePositionWatcher(fallbackStyle, 'fallback');
         var userAgentStyle = createOrUpdateStyle('darkreader--user-agent');
-        userAgentStyle.textContent = getModifiedUserAgentStyle(filter, isIFrame, filter.styleSystemControls);
+        userAgentStyle.textContent = getModifiedUserAgentStyle(filter, isIFrame$1, filter.styleSystemControls);
         document.head.insertBefore(userAgentStyle, fallbackStyle.nextSibling);
         setupNodePositionWatcher(userAgentStyle, 'user-agent');
         var textStyle = createOrUpdateStyle('darkreader--text');
@@ -4024,7 +4203,7 @@
             ignoredImageAnalysisSelectors = [];
             ignoredInlineSelectors = [];
         }
-        isIFrame = iframe;
+        isIFrame$1 = iframe;
         if (document.head) {
             if (isAnotherDarkReaderInstanceActive()) {
                 return;
@@ -4160,99 +4339,8 @@
         });
     }
 
-    function getAllIFrames(workingDocument) {
-        if (!workingDocument) {
-            return [];
-        }
-        var IFrames = [];
-        IFrames = __spread(IFrames, workingDocument.getElementsByTagName('iframe'));
-        IFrames.forEach(function (IFrame) {
-            IFrames = __spread(IFrames, getAllIFrames(IFrame.contentDocument));
-        });
-        return IFrames;
-    }
-    var IFrameDetectedCallback = null;
-    var isEnabled;
-    var getStore;
-    var onNewIFrame = function (IFrame) {
-        var contentDocument = IFrame.contentDocument;
-        IFrameDetectedCallback(contentDocument);
-        setupIFrameObserver(contentDocument);
-        IFrame.setAttribute('isdarkreaderactived', '1');
-        if (isEnabled()) {
-            contentDocument.dispatchEvent(new CustomEvent('__darkreader__enableDynamicTheme', { detail: getStore() }));
-            var dispatchCustomEvent_1 = function () {
-                if (isEnabled()) {
-                    contentDocument.dispatchEvent(new CustomEvent('__darkreader__enableDynamicTheme', { detail: getStore() }));
-                    contentDocument.removeEventListener('__darkreader__IAmReady', dispatchCustomEvent_1);
-                }
-            };
-            contentDocument.addEventListener('__darkreader__IAmReady', dispatchCustomEvent_1);
-        }
-    };
-    var onMutation = function (workingDocument) {
-        getAllIFrames(workingDocument).forEach(function (IFrame) {
-            if (!IFrame.getAttribute('isdarkreaderactived')) {
-                ensureIFrameIsLoaded(IFrame, function () { return !IFrame.getAttribute('isdarkreaderactived') && onNewIFrame(IFrame); });
-            }
-        });
-    };
-    function setupIFrameData(listener, getOptions, isDarkReaderEnabled) {
-        IFrameDetectedCallback = listener;
-        getStore = getOptions;
-        isEnabled = isDarkReaderEnabled;
-        onMutation(document);
-    }
-    function setupIFrameObserver(workingDocument) {
-        if (workingDocument === void 0) { workingDocument = document; }
-        var observerDocument = workingDocument;
-        var observer = new MutationObserver(function () {
-            onMutation(observerDocument);
-        });
-        observer.observe(observerDocument.documentElement, { childList: true, subtree: true });
-    }
-    function ensureIFrameIsLoaded(IFrame, callback) {
-        var timeoutID;
-        var fired = false;
-        function ready() {
-            if (!fired) {
-                fired = true;
-                clearTimeout(timeoutID);
-                callback(IFrame.contentDocument);
-            }
-        }
-        IFrame.addEventListener('load', function () {
-            ready();
-        });
-        function checkLoaded() {
-            var doc = IFrame.contentDocument;
-            if (doc.URL.indexOf('about:') !== 0) {
-                if (doc.readyState === 'complete') {
-                    ready.call(doc);
-                }
-                else {
-                    doc.addEventListener('DOMContentLoaded', ready);
-                    doc.addEventListener('readystatechange', ready);
-                }
-            }
-            else {
-                timeoutID = setTimeout(checkLoaded);
-            }
-        }
-        checkLoaded();
-    }
-
     var isDarkReaderEnabled = false;
     var usesIFrames = false;
-    var isIFrame$1 = (function () {
-        try {
-            return window.self !== window.top;
-        }
-        catch (err) {
-            console.warn(err);
-            return true;
-        }
-    })();
     function enable(themeOptions, fixes) {
         if (themeOptions === void 0) { themeOptions = {}; }
         if (fixes === void 0) { fixes = null; }
@@ -4261,7 +4349,7 @@
             throw new Error('Theme engine is not supported.');
         }
         store = { theme: theme, fixes: fixes };
-        createOrUpdateDynamicTheme(theme, fixes, isIFrame$1);
+        createOrUpdateDynamicTheme(theme, fixes, isIFrame);
         isDarkReaderEnabled = true;
         var enableDynamicThemeEvent = new CustomEvent('__darkreader__enableDynamicTheme', { detail: { theme: theme, fixes: fixes } });
         usesIFrames && getAllIFrames(document).forEach(function (IFrame) { return ensureIFrameIsLoaded(IFrame, function (IFrameDocument) { return IFrameDocument.dispatchEvent(enableDynamicThemeEvent); }); });

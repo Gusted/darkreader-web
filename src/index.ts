@@ -1,10 +1,17 @@
 import {addDOMReadyListener, isDOMReady} from './dom';
 
 const setup = () => {
+    const origin = window.location.origin;
+    (window as any).DarkReader.setFetchMethod((url: string) => window.fetch(`${origin}/api/proxy?${url}`));
     (window as any).DarkReader.enable();
     (window as any).DarkReader.setupIFrameListener((IFrameDocument: Document) => {
+        [...IFrameDocument.getElementsByTagName('iframe')].forEach((IFrame) => {
+            if (!IFrame.src.startsWith(origin)) {
+                IFrame.src = `${origin}/api/proxy?${IFrame.src}`;
+            }
+        });
         const newScript = IFrameDocument.createElement('script');
-        newScript.src = `${window.location.origin}/darkreader.js`;
+        newScript.src = `${origin}/darkreader.js`;
         newScript.textContent = '';
         IFrameDocument.head.append(newScript);
     });
