@@ -16,9 +16,9 @@ proxyServer.on('error', (err, _, res) => {
 });
 
 const proxyHandler = corsAnywhereIframe.getHandler({
-    // 6 Request every minute. So every 10 seconds 1 request.
+    // 20 Request every minute.
     checkRateLimit: corsAnywhereIframe.createRateLimitChecker({
-        maxRequestsPerPeriod: 6,
+        maxRequestsPerPeriod: 20,
         periodInMinutes: 1
     })
 }, proxyServer);
