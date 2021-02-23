@@ -8,8 +8,7 @@ const setup = () => {
         [...IFrameDocument.getElementsByTagName('iframe')].forEach((IFrame) => {
             if (!IFrame.src.startsWith(origin)) {
                 const newIframe = IFrameDocument.createElement('iframe');
-                newIframe.src = `${origin}/api/proxy?${btoa(IFrame.src)}`;
-                newIframe.setAttribute('crossorigin', '');
+                newIframe.src = `${origin}/api/proxy?${encodeURIComponent(IFrame.src)}`;
                 IFrame.parentNode.replaceChild(newIframe, IFrame);
             }
         });
@@ -33,7 +32,7 @@ const setup = () => {
     }
     const workingURL = parsedURL.searchParams.get('url');
     const IFrameSiteWrapper = document.querySelector('.site-wrapper') as HTMLIFrameElement;
-    IFrameSiteWrapper.src = `${window.location.origin}/api/proxy?${btoa(workingURL)}`;
+    IFrameSiteWrapper.src = `${window.location.origin}/api/proxy?${encodeURIComponent(workingURL)}`;
     const searchBar = document.querySelector('.search-bar') as HTMLInputElement;
     searchBar.value = workingURL;
 };
