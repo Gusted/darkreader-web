@@ -24,7 +24,7 @@ const proxyHandler = corsAnywhereIframe.getHandler({
 }, proxyServer);
 
 module.exports = (req, res) => {
-    req.url = decodeURIComponent(req.url).substring(11);
+    req.url = req.url.substring(11);
     console.log(req.url);
     proxyHandler(req, res);
 };
