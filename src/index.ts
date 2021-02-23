@@ -2,12 +2,15 @@ import {addDOMReadyListener, isDOMReady} from './dom';
 
 const setup = () => {
     const origin = window.location.origin;
-    (window as any).DarkReader.setFetchMethod(async (url: string) => window.fetch(`${origin}/api/proxy?${url}`));
+    (window as any).DarkReader.setFetchMethod(async (url: string) => await window.fetch(`${origin}/api/proxy?${url}`));
     (window as any).DarkReader.enable();
     (window as any).DarkReader.setupIFrameListener((IFrameDocument: Document) => {
         [...IFrameDocument.getElementsByTagName('iframe')].forEach((IFrame) => {
             if (!IFrame.src.startsWith(origin)) {
-                IFrame.src = `${origin}/api/proxy?${IFrame.src}`;
+                const newIframe = IFrameDocument.createElement('iframe');
+                newIframe.src = `${origin}/api/proxy?${btoa(IFrame.src)}`;
+                newIframe.setAttribute('crossorigin', '');
+                IFrame.parentNode.replaceChild(newIframe, IFrame);
             }
         });
         const newScript = IFrameDocument.createElement('script');
@@ -30,7 +33,7 @@ const setup = () => {
     }
     const workingURL = parsedURL.searchParams.get('url');
     const IFrameSiteWrapper = document.querySelector('.site-wrapper') as HTMLIFrameElement;
-    IFrameSiteWrapper.src = `${window.location.origin}/api/proxy?${workingURL}`;
+    IFrameSiteWrapper.src = `${window.location.origin}/api/proxy?${btoa(workingURL)}`;
     const searchBar = document.querySelector('.search-bar') as HTMLInputElement;
     searchBar.value = workingURL;
 };
