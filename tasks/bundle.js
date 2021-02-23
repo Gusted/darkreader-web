@@ -8,10 +8,12 @@ async function main() {
     const args = process.argv.slice(2);
     await typeCheck();
     await bundleJS(args.includes('--release'));
+
+    !fs.existsSync('public/') && fs.mkdirSync('public');
     glob.sync('src/ui/**/*').forEach((path) => {
-        fs.copyFileSync(path, `public/${path.substring(path.lastIndexOf('/'))}`);
+        fs.copyFileSync(path, `public${path.substring(path.lastIndexOf('/'))}`);
     });
-    !fs.existsSync('public/assets') && fs.mkdirSync('public/assets');
+    !fs.existsSync('public/assets/') && fs.mkdirSync('public/assets');
     glob.sync('assets/**/*').forEach((path) => {
         fs.copyFileSync(path, `public/${path}`);
     });
