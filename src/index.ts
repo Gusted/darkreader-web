@@ -1,4 +1,4 @@
-import setupDarkReader from 'darkreader/darkreader';
+import setupDarkReader from 'darkreader';
 import {addDOMReadyListener, isDOMReady} from './dom';
 
 const setup = () => {
