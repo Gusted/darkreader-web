@@ -15,8 +15,10 @@ document.addEventListener('submit', (e) => {
             // TO-DO
             // const method = {method: 'post', body: new FormData(document.activeElement.form)};
         } else {
-            const absoluteURL = getAbsoluteURL(window.top.location.href.substring(window.top.location.href.indexOf('url=') + 4), (document.activeElement as any).form.action);
-            window.top.location.href = `${window.top.location.href.substring(0, window.top.location.href.indexOf('?') + 1)}url=${absoluteURL}?${new URLSearchParams(new FormData((document.activeElement as any).form) as any)}`;
+            const topHref = window.top.location.href;
+            const absoluteURL = getAbsoluteURL(topHref.substring(topHref.indexOf('url=') + 4), (document.activeElement as any).form.action);
+            const SearchParams = new URLSearchParams(new FormData((document.activeElement as any).form) as any);
+            window.top.location.href = `${topHref.substring(0, topHref.indexOf('?'))}?url=${encodeURIComponent(`${absoluteURL}?${SearchParams}`)}`;
         }
     }
 });

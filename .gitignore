@@ -3,3 +3,5 @@ yarn-error.log
 .eslintcache
 tsconfig.tsbuildinfo
 public/
+
+.vercel

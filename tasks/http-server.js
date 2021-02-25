@@ -2,7 +2,6 @@ const http = require('http');
 const httpProxy = require('http-proxy');
 const corsAnywhereIframe = require('cors-anywhere-iframe');
 
-
 const serveHandler = require('serve-handler');
 
 const proxyServer = httpProxy.createServer();
