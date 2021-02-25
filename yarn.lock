@@ -297,9 +297,10 @@ content-disposition@0.5.2:
   resolved "https://registry.yarnpkg.com/content-disposition/-/content-disposition-0.5.2.tgz#0cf68bb9ddf5f2be7961c3a85178cb85dba78cb4"
   integrity sha1-DPaLud318r55YcOoUXjLhdunjLQ=
 
-"cors-anywhere-iframe@github:gusted/cors-anywhere-iframe":
+cors-anywhere-iframe@1.0.0:
   version "1.0.0"
-  resolved "https://codeload.github.com/gusted/cors-anywhere-iframe/tar.gz/acba9bdbc510ec467f66c05bbe46f7d5e88b3405"
+  resolved "https://registry.yarnpkg.com/cors-anywhere-iframe/-/cors-anywhere-iframe-1.0.0.tgz#d47d882a90d80cf5484f2764102435f116a7ce59"
+  integrity sha512-2fh0QCBqEG3gE0U4DicAgNA85Ul/xkli17GVdYbYyKD9R6WM3a51wSDEOMgy4Tl1rqmu+hvJxf9hjr+kpzKckg==
   dependencies:
     http-proxy "1.18.1"
     proxy-from-env "1.1.0"
@@ -512,9 +513,9 @@ fast-url-parser@1.1.3:
     punycode "^1.3.2"
 
 fastq@^1.6.0:
-  version "1.10.1"
-  resolved "https://registry.yarnpkg.com/fastq/-/fastq-1.10.1.tgz#8b8f2ac8bf3632d67afcd65dac248d5fdc45385e"
-  integrity sha512-AWuv6Ery3pM+dY7LYS8YIaCiQvUaos9OB1RyNgaOWnaX+Tik7Onvcsf8x8c+YtDeT0maYLniBip2hox5KtEXXA==
+  version "1.11.0"
+  resolved "https://registry.yarnpkg.com/fastq/-/fastq-1.11.0.tgz#bb9fb955a07130a918eb63c1f5161cc32a5d0858"
+  integrity sha512-7Eczs8gIPDrVzT+EksYBcupqMyxSHXXrHOLRRxU2/DicV8789MRBRR8+Hc2uWzUupOs4YS4JzBmBxjjCVBxD/g==
   dependencies:
     reusify "^1.0.4"
 
