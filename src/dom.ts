@@ -1,12 +1,7 @@
-export function isDOMReady() {
-    return document.readyState === 'complete' || document.readyState === 'interactive';
-}
-
 const readyStateListeners = new Set<() => void>();
 
-export function addDOMReadyListener(listener: () => void) {
-    readyStateListeners.add(listener);
-}
+export const isDOMReady = () => document.readyState === 'complete' || document.readyState === 'interactive';
+export const addDOMReadyListener = (listener: () => void) => readyStateListeners.add(listener);
 
 if (!isDOMReady()) {
     const onReadyStateChange = () => {

@@ -9,6 +9,7 @@ const setup = () => {
             if (!IFrame.src.startsWith(origin)) {
                 const newIframe = IFrameDocument.createElement('iframe');
                 newIframe.src = `${origin}/api/proxy?${encodeURIComponent(IFrame.src)}`;
+                // Hard reload an IFrame to refresh. Firefox seems to occur certain problems when just changing `src`.
                 IFrame.parentNode.replaceChild(newIframe, IFrame);
             }
         });
@@ -16,6 +17,8 @@ const setup = () => {
         newScript.src = `${origin}/darkreader.js`;
         newScript.textContent = '';
         IFrameDocument.head.append(newScript);
+
+        // TO-DO add this into cors-anywhere-iframe
         const proxyScript = IFrameDocument.createElement('script');
         proxyScript.src = `${origin}/proxy.js`;
         proxyScript.textContent = '';
