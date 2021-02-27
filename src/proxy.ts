@@ -2,10 +2,14 @@ import {getAbsoluteURL} from 'utils/url';
 
 document.addEventListener('click', (e) => {
     if (frameElement && document.activeElement && (document.activeElement as HTMLAnchorElement).href) {
-        e.preventDefault();
         // Firefox puts an incorrect href into element.href which doesn't correspondent to the attribute href and isn't relative to main url.
+        const href = document.activeElement.getAttribute('href');
+        if (href.startsWith('javascript:')) {
+            return;
+        }
+        e.preventDefault();
         const topHref = window.top.location.href;
-        const absoluteURL = getAbsoluteURL(topHref.substring(topHref.indexOf('url=') + 4), document.activeElement.getAttribute('href'));
+        const absoluteURL = getAbsoluteURL(topHref.substring(topHref.indexOf('url=') + 4), href);
         window.top.location.href = `${topHref.substring(0, topHref.indexOf('?') + 1)}url=${absoluteURL}`;
     }
 });
