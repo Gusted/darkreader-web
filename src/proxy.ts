@@ -4,9 +4,12 @@ document.addEventListener('click', (e) => {
     if (frameElement && document.activeElement && (document.activeElement as HTMLAnchorElement).href) {
         // Firefox puts an incorrect href into element.href which doesn't correspondent to the attribute href and isn't relative to main url.
         const href = document.activeElement.getAttribute('href');
-        if (href.startsWith('javascript:')) {
+        // hrefs that start with one of the following aren't supposed to be followed by the browser, 
+        // but rather, execute context-dependent actions within the loaded webpage.
+        if (href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) {
             return;
         }
+        
         e.preventDefault();
         const topHref = window.top.location.href;
         const absoluteURL = getAbsoluteURL(topHref.substring(topHref.indexOf('url=') + 4), href);
