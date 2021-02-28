@@ -2,9 +2,9 @@ import {getAbsoluteURL} from 'utils/url';
 
 document.addEventListener('click', (e) => {
     if (frameElement && document.activeElement && (document.activeElement as HTMLAnchorElement).href) {
-        // Firefox puts an incorrect href into element.href which doesn't correspondent to the attribute href and isn't relative to main url.
+        // hrefs that start with one of the following aren't supposed to be followed by the browser, but rather, execute context-dependent actions within the loaded webpage.
         const href = document.activeElement.getAttribute('href');
-        if (href.startsWith('javascript:')) {
+        if (href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) {
             return;
         }
         e.preventDefault();
