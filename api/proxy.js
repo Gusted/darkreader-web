@@ -15,12 +15,16 @@ proxyServer.on('error', (err, _, res) => {
     res.end('Not found because of proxy error: ' + err);
 });
 
+// TO-DO Inline proxy scripts.
+const onReceiveResponseBody = (body, origin) => body.replace(/<head([^>]*)>/i, `<head$1><base href="${origin}">`);
+
 const proxyHandler = corsAnywhereIframe.getHandler({
     // 20 Request every minute.
     checkRateLimit: corsAnywhereIframe.createRateLimitChecker({
         maxRequestsPerPeriod: 20,
         periodInMinutes: 1
-    })
+    }),
+    onReceiveResponseBody,
 }, proxyServer);
 
 module.exports = (req, res) => {

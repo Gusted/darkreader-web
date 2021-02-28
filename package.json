@@ -13,7 +13,7 @@
     "serve": "node tasks/http-server.js"
   },
   "dependencies": {
-    "cors-anywhere-iframe": "1.0.0",
+    "cors-anywhere-iframe": "1.0.1",
     "serve-handler": "6.1.3"
   },
   "devDependencies": {

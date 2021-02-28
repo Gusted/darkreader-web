@@ -1,7 +1,6 @@
 const http = require('http');
 const httpProxy = require('http-proxy');
 const corsAnywhereIframe = require('cors-anywhere-iframe');
-
 const serveHandler = require('serve-handler');
 
 const proxyServer = httpProxy.createServer();
@@ -18,7 +17,11 @@ proxyServer.on('error', (err, _, res) => {
     res.end('Not found because of proxy error: ' + err);
 });
 
-const proxyHandler = corsAnywhereIframe.getHandler({}, proxyServer);
+const onReceiveResponseBody = (body, origin) => body.replace(/<head([^>]*)>/i, `<head$1><base href="${origin}">`);
+
+const proxyHandler = corsAnywhereIframe.getHandler({
+    onReceiveResponseBody
+}, proxyServer);
 
 // TO-DO Customize ports/hostname.
 http.createServer((req, res) => {

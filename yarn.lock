@@ -297,10 +297,10 @@ content-disposition@0.5.2:
   resolved "https://registry.yarnpkg.com/content-disposition/-/content-disposition-0.5.2.tgz#0cf68bb9ddf5f2be7961c3a85178cb85dba78cb4"
   integrity sha1-DPaLud318r55YcOoUXjLhdunjLQ=
 
-cors-anywhere-iframe@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/cors-anywhere-iframe/-/cors-anywhere-iframe-1.0.0.tgz#d47d882a90d80cf5484f2764102435f116a7ce59"
-  integrity sha512-2fh0QCBqEG3gE0U4DicAgNA85Ul/xkli17GVdYbYyKD9R6WM3a51wSDEOMgy4Tl1rqmu+hvJxf9hjr+kpzKckg==
+cors-anywhere-iframe@1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/cors-anywhere-iframe/-/cors-anywhere-iframe-1.0.1.tgz#7432c2567ee5324186c5623bf4a7bd640d06c494"
+  integrity sha512-Ze6rC5lj7uUIadeQQpfBYq95eynum8l5bxWEtVAICvkPrFGr0nyxg6Rt3iEzCHVHGsu8jBuztmG/Bu4DXuDbHA==
   dependencies:
     http-proxy "1.18.1"
     proxy-from-env "1.1.0"
