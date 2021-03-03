@@ -6,3 +6,8 @@
 <br/>
 <p align="center">Dark Reader's Web wrapper is an <strong>open-source</strong> MIT-licensed <strong>site</strong>, that is designed to load regular web pages and use Dark Reader to analyze those pages. Based on its analysis Dark Reader will generate a dark mode based on this. Hereby Dark Reader aims to <strong>reduce the eyestrain</strong> of the user. Dark Reader is <strong>feature-rich</strong> and can be configured in many ways throughout the UI.</p>
 <br/>
+
+## Deploying
+
+Run your own instance without any rate-limiter
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/git/external?repository-url=https%3A%2F%2Fgithub.com%2FGusted%2Fdarkreader-web)

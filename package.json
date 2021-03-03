@@ -10,7 +10,8 @@
     "build": "node tasks/bundle.js",
     "code-style": "eslint --cache --fix \"src/**/*.ts\" \"tasks/**/*.js\" \"api/**/*.js\" \"shared/**/*.js\" \".eslintrc.js\"",
     "release": "node tasks/bundle.js --release",
-    "serve": "node tasks/http-server.js"
+    "serve": "node tasks/http-server.js",
+    "vercel": "vercel dev"
   },
   "dependencies": {
     "cors-anywhere-iframe": "1.0.1",

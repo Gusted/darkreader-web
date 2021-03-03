@@ -1,7 +1,12 @@
+# Yarn
 node_modules/
 yarn-error.log
+
+# Caching files
 .eslintcache
 tsconfig.tsbuildinfo
-public/
 
+# Vercel Stuff
 .vercel
+.env
+public/
