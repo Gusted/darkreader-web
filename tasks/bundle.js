@@ -6,7 +6,7 @@ const glob = require('globs');
 
 async function main() {
     const args = process.argv.slice(2);
-    await typeCheck();
+    !args.includes('--skip-typecheck') && await typeCheck();
     await bundleJS(args.includes('--release'));
 
     !fs.existsSync('public/') && fs.mkdirSync('public');

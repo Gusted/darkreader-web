@@ -10,6 +10,7 @@
     "build": "node tasks/bundle.js",
     "code-style": "eslint --cache --fix \"src/**/*.ts\" \"tasks/**/*.js\" \"api/**/*.js\" \"shared/**/*.js\" \".eslintrc.js\"",
     "release": "node tasks/bundle.js --release",
+    "release-vercel": "node tasks/bundle.js --release --skip-typecheck",
     "vercel": "vercel dev"
   },
   "dependencies": {
