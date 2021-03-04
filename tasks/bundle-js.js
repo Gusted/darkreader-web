@@ -37,10 +37,10 @@ async function compileJS(entry, release) {
         color: true,
         sourcemap: release ? false : 'inline',
         minify: release,
-        define: release ? {
-            '__DEBUG__': 'false'
-        } : {
+        define: process.env.VERCEL_ENV === 'development' ? {
             '__DEBUG__': 'true'
+        } : {
+            '__DEBUG__': 'false'
         },
     });
 }

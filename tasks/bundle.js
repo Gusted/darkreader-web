@@ -6,7 +6,7 @@ const glob = require('globs');
 
 async function main() {
     const args = process.argv.slice(2);
-    !args.includes('--skip-typecheck') && await typeCheck();
+    process.env.VERCEL_ENV === 'development' && await typeCheck();
     await bundleJS(args.includes('--release'));
 
     !fs.existsSync('public/') && fs.mkdirSync('public');
