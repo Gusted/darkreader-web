@@ -37,6 +37,11 @@ async function compileJS(entry, release) {
         color: true,
         sourcemap: release ? false : 'inline',
         minify: release,
+        define: release ? {
+            '__DEBUG__': 'false'
+        } : {
+            '__DEBUG__': 'true'
+        },
     });
 }
 

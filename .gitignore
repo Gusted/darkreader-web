@@ -10,3 +10,6 @@ tsconfig.tsbuildinfo
 .vercel
 .env
 public/
+
+# Profiling
+.clinic/

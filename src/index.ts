@@ -19,6 +19,18 @@ const setup = () => {
     searchBar.value = workingURL;
 };
 
+
+declare const __DEBUG__: boolean;
+if (__DEBUG__) {
+    // IFrames are afraid of `localhost`
+    // However they are long standing friends with local IP's.
+    // Just to make sure they won't be afraid.
+    // We set it to `0.0.0.0`.
+    if (location.hostname === 'localhost') {
+        location.hostname = '0.0.0.0';
+    }
+}
+
 if (isDOMReady()) {
     setup();
 } else {
