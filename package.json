@@ -13,13 +13,13 @@
     "vercel": "vercel dev"
   },
   "dependencies": {
-    "cors-anywhere-iframe": "1.0.1"
+    "cors-anywhere-iframe": "1.0.2"
   },
   "devDependencies": {
     "@types/node": "14.14.31",
     "@typescript-eslint/eslint-plugin": "4.16.1",
     "@typescript-eslint/parser": "4.16.1",
-    "esbuild": "0.8.54",
+    "esbuild": "0.8.55",
     "eslint": "7.21.0",
     "fs-extra": "9.1.0",
     "globs": "0.1.4",
