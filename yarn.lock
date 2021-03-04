@@ -418,10 +418,10 @@ configstore@^5.0.1:
     write-file-atomic "^3.0.0"
     xdg-basedir "^4.0.0"
 
-cors-anywhere-iframe@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/cors-anywhere-iframe/-/cors-anywhere-iframe-1.0.2.tgz#ce89bdc336285357fd63313f2afe8e0996a235e6"
-  integrity sha512-qe59lGLNqoH1Wa6CLsPjegFe7Z4kLF3H3FeyXjht2wOhDj1LFvnBJttVybOZ7t9bIt+Om6OfJC31Ydt4s97sow==
+cors-anywhere-iframe@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/cors-anywhere-iframe/-/cors-anywhere-iframe-1.0.3.tgz#faf103a0e152ed5da318a39a8ebadb303ecefd9e"
+  integrity sha512-pUT4qfg0GXqCDXaHg1th7aT8T2cf9qpj7hAnM+Bk/AdYtsw64yE3EPLtGjkqZtr0zdf1x3fjozpSPeZqa6jwxA==
   dependencies:
     http-proxy "1.18.1"
     proxy-from-env "1.1.0"

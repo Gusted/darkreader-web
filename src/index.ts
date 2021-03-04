@@ -19,7 +19,9 @@ const setup = () => {
     searchBar.value = workingURL;
 };
 
-
+// Simple optimization for the compiler.
+// As it's an local debug problem thingy, as explained under me.
+// And shouldn't affect production code.
 declare const __DEBUG__: boolean;
 if (__DEBUG__) {
     // IFrames are afraid of `localhost`
