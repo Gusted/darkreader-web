@@ -1,4 +1,5 @@
 import setupDarkReader from 'darkreader';
+import {logInfo, isDebug} from 'utils/debug';
 import {addDOMReadyListener, isDOMReady} from './dom';
 
 const setup = () => {
@@ -13,24 +14,21 @@ const setup = () => {
         return;
     }
     const workingURL = parsedURL.searchParams.get('url');
+
     const IFrameSiteWrapper = document.querySelector('.site-wrapper') as HTMLIFrameElement;
+    logInfo('loading:', workingURL);
     IFrameSiteWrapper.src = `${window.location.origin}/api/proxy?${encodeURIComponent(workingURL)}`;
+
     const searchBar = document.querySelector('.search-bar') as HTMLInputElement;
     searchBar.value = workingURL;
 };
 
-// Simple optimization for the compiler.
-// As it's an local debug problem thingy, as explained under me.
-// And shouldn't affect production code.
-declare const __DEBUG__: boolean;
-if (__DEBUG__) {
+if (isDebug && location.hostname === 'localhost') {
     // IFrames are afraid of `localhost`
     // However they are long standing friends with local IP's.
     // Just to make sure they won't be afraid.
     // We set it to `0.0.0.0`.
-    if (location.hostname === 'localhost') {
-        location.hostname = '0.0.0.0';
-    }
+    location.hostname = '0.0.0.0';
 }
 
 if (isDOMReady()) {

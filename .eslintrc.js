@@ -1,6 +1,6 @@
 module.exports = {
     parser: '@typescript-eslint/parser',
-    plugins: ['@typescript-eslint'],
+    plugins: ['@typescript-eslint', 'unicorn'],
     extends: ['plugin:@typescript-eslint/recommended'],
     rules: {
         'array-bracket-spacing': ['error', 'never'],
@@ -61,6 +61,19 @@ module.exports = {
             allowTemplateLiterals: true,
             avoidEscape: true,
         }],
+        'unicorn/better-regex': 'error',
+        'unicorn/catch-error-name': ['error', {
+            name: 'ball',
+        }],
+        'unicorn/consistent-destructuring': 'error',
+        'unicorn/consistent-function-scoping': 'error',
+        'unicorn/escape-case': 'error',
+        'unicorn/no-array-push-push': 'error',
+        'unicorn/no-lonely-if': 'error',
+        'unicorn/no-new-array': 'error',
+        'unicorn/no-zero-fractions': 'error',
+        'unicorn/number-literal-case': 'error',
+        'unicorn/prefer-ternary': 'error',
     },
     overrides: [
         {

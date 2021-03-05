@@ -59,7 +59,7 @@ document.addEventListener('submit', (e) => {
             // We now receive the origin from the URL object, so we can hijack it.
             // And wrap it into our ?url= query.
             url.replace(validatedURL.origin, `${window.top.location.origin}?url=${validatedURL.origin}`);
-        } catch (err) {
+        } catch (ball) {
             // Means not validated URL and highly likely an relative URL.
             const topHref = window.top.location.href;
             // We now receive the originial URL and create an absolute URL with the relative URL.
