@@ -1,3 +1,4 @@
+import {logInfo, logWarn} from 'utils/debug';
 import {isFirefox} from 'utils/platform';
 import {getAbsoluteURL} from 'utils/url';
 
@@ -21,6 +22,7 @@ document.addEventListener('submit', (e) => {
     if (frameElement && document.activeElement && (document.activeElement as HTMLInputElement).form && (document.activeElement as HTMLInputElement).form.action) {
         e.preventDefault();
         if ((document.activeElement as HTMLInputElement).form.method === 'post') {
+            logWarn('This site is trying to do something important! Post method form');
             // TO-DO
             // const method = {method: 'post', body: new FormData(document.activeElement.form)};
         } else {
@@ -98,3 +100,5 @@ document.addEventListener('submit', (e) => {
     // Firefox doesn't have this functionallity so let's not make one of it.
     !isFirefox && Object.defineProperty(Navigator.prototype, 'unregisterProtocolHandler', Object.assign({}, unregisterProtocolHandlerDescriptor, {value: proxyUnregisterProtocolHandler}));
 })();
+
+logInfo('Succesfully proxied!');
