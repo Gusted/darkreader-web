@@ -35,5 +35,5 @@ jobs:
         if: ${{ steps.yarn-cache.outputs.cache-hit == 'true' }}
 
 # Uncomment when we have actualy tests
-#      - run: yarn run test:ci
+#     - run: yarn run test:ci
       - run: yarn run lint

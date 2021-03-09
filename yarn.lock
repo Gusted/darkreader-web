@@ -1070,7 +1070,7 @@ glob-parent@^5.0.0, glob-parent@^5.1.0:
   dependencies:
     is-glob "^4.0.1"
 
-glob@^7.1.1, glob@^7.1.3:
+glob@^7.1.3:
   version "7.1.6"
   resolved "https://registry.yarnpkg.com/glob/-/glob-7.1.6.tgz#141f33b81a7c2492e125594307480c46679278a6"
   integrity sha512-LwaxwyZ72Lk7vZINtNNrywX0ZuLyStrdDtabefZKAY5ZGJhVtgdznluResxNmPitE0SAO+O26sWTHeKSI2wMBA==
@@ -1112,13 +1112,6 @@ globby@^11.0.1:
     ignore "^5.1.4"
     merge2 "^1.3.0"
     slash "^3.0.0"
-
-globs@0.1.4:
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/globs/-/globs-0.1.4.tgz#1d13639f6174e4ae73a7f936da7d9a079f657c1c"
-  integrity sha512-D23dWbOq48vlOraoSigbcQV4tWrnhwk+E/Um2cMuDS3/5dwGmdFeA7L/vAvDhLFlQOTDqHcXh35m/71g2A2WzQ==
-  dependencies:
-    glob "^7.1.1"
 
 got@^9.6.0:
   version "9.6.0"

@@ -1,4 +1,4 @@
-<p align="center"><a href="https://darkreader-web.vercel.app/" target="_blank" rel="noreferrer noopener"><img width="700" alt="Dark Reader's mascot" src="./assets/darkreader-web-banner-transparent-1280x640.svg"></a></p>
+<p align="center"><a href="https://darkreader-web.vercel.app/" target="_blank" rel="noreferrer noopener"><img width="700" alt="Dark Reader's mascot" src="./docs/darkreader-web-banner-transparent-1280x640.svg"></a></p>
 <p align="center">Dark Reader's web wrapper load sites and <strong>analyzes</strong> those web pages and aims to <strong>reduce the eyestrain</strong> while you browse the page.</p>
 <br/>
     

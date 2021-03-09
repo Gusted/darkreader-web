@@ -12,7 +12,8 @@
         ],
         "downlevelIteration": true,
         "noEmit": true,
-        "incremental": true
+        "incremental": true,
+        "isolatedModules": true
     },
     "exclude": [
         "node_modules"

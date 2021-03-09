@@ -2,7 +2,6 @@
 const {typeCheck} = require('./type-check');
 const {bundleJS} = require('./bundle-js');
 const fs = require('fs');
-const glob = require('globs');
 
 async function main() {
     const args = process.argv.slice(2);
@@ -10,12 +9,23 @@ async function main() {
     await bundleJS(args.includes('--release'));
 
     !fs.existsSync('public/') && fs.mkdirSync('public');
-    glob.sync('src/ui/**/*').forEach((path) => {
-        fs.copyFileSync(path, `public${path.substring(path.lastIndexOf('/'))}`);
+    fs.readdir('src/ui/', (err, files) => {
+        if (err) {
+            console.warn('Unable to scan directory: ' + err);
+            return;
+        } 
+        files.forEach((file) => {
+            fs.copyFileSync(`src/ui/${file}`, `public/${file}`); 
+        });
     });
-    !fs.existsSync('public/assets/') && fs.mkdirSync('public/assets');
-    glob.sync('assets/**/*').forEach((path) => {
-        fs.copyFileSync(path, `public/${path}`);
+    fs.readdir('assets', (err, files) => {
+        if (err) {
+            console.warn('Unable to scan directory: ' + err);
+            return;
+        } 
+        files.forEach((file) => {
+            fs.copyFileSync(`assets/${file}`, `public/${file}`); 
+        });
     });
 }
 
