@@ -1,5 +1,5 @@
 import setupDarkReader from 'darkreader';
-import {logInfo, isDebug} from 'utils/debug';
+import {logInfo, isDebug, logWarn} from 'utils/debug';
 import {addDOMReadyListener, isDOMReady} from './dom';
 
 const setup = () => {
@@ -16,19 +16,23 @@ const setup = () => {
     const workingURL = parsedURL.searchParams.get('url');
 
     const IFrameSiteWrapper = document.querySelector('.site-wrapper') as HTMLIFrameElement;
-    logInfo('loading:', workingURL);
+    logInfo('Loading:', workingURL);
     IFrameSiteWrapper.src = `${window.location.origin}/api/proxy?${encodeURIComponent(workingURL)}`;
 
     const searchBar = document.querySelector('.search-bar') as HTMLInputElement;
     searchBar.value = workingURL;
 };
 
-if (isDebug && location.hostname === 'localhost') {
-    // IFrames are afraid of `localhost`
-    // However they are long standing friends with local IP's.
-    // Just to make sure they won't be afraid.
-    // We set it to `0.0.0.0`.
-    location.hostname = '0.0.0.0';
+if (isDebug) {
+    logWarn('You are using the debug version of darkreader-web.');
+
+    if (location.hostname === 'localhost') {
+        // IFrames are afraid of `localhost`
+        // However they are long standing friends with local IP's.
+        // Just to make sure they won't be afraid.
+        // We set it to `0.0.0.0`.
+        location.hostname = '0.0.0.0';
+    }
 }
 
 if (isDOMReady()) {

@@ -83,17 +83,5 @@ module.exports = {
                 '@typescript-eslint/no-implicit-any-catch': 'off'
             },
         },
-        {
-            files: ['src/**/*.ts'],
-            parserOptions: {
-                ecmaVersion: 2019,
-                project: 'src/tsconfig.json',
-            },
-            rules: {
-                '@typescript-eslint/no-implied-eval': 'error',
-                '@typescript-eslint/switch-exhaustiveness-check': 'error',
-                '@typescript-eslint/promise-function-async': 'error',
-            }
-        },
     ],
 };
