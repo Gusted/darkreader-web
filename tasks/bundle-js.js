@@ -32,7 +32,7 @@ async function compileJS(entry, release) {
         write: true,
         outfile: entry.dest,
         entryPoints: [entry.input],
-        banner: '"use strict";',
+        banner: {js: '"use strict";'},
         logLevel: 'info',
         color: true,
         sourcemap: release ? false : 'inline',

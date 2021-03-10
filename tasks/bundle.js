@@ -13,18 +13,18 @@ async function main() {
         if (err) {
             console.warn('Unable to scan directory: ' + err);
             return;
-        } 
+        }
         files.forEach((file) => {
-            fs.copyFileSync(`src/ui/${file}`, `public/${file}`); 
+            fs.copyFileSync(`src/ui/${file}`, `public/${file}`);
         });
     });
     fs.readdir('assets', (err, files) => {
         if (err) {
             console.warn('Unable to scan directory: ' + err);
             return;
-        } 
+        }
         files.forEach((file) => {
-            fs.copyFileSync(`assets/${file}`, `public/${file}`); 
+            fs.copyFileSync(`assets/${file}`, `public/${file}`);
         });
     });
 }
