@@ -77,7 +77,7 @@ module.exports = {
     },
     overrides: [
         {
-            files: ['tasks/**/*.js', 'api/**/*.js', 'shared/**/*.js'],
+            files: ['tasks/**/*.js', 'api/**/*.js'],
             rules: {
                 '@typescript-eslint/no-var-requires': 'off',
                 '@typescript-eslint/no-implicit-any-catch': 'off'

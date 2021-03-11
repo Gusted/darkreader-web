@@ -5,33 +5,15 @@ const {build} = require('esbuild');
  * @param {boolean} release Enable release specific flags.
  */
 async function bundleJS(release) {
-    [
-        {
-            input: 'src/index.ts',
-            dest: 'public/index.js'
-        },
-        {
-            input: 'src/proxy.ts',
-            dest: 'public/proxy.js',
-        }
-    ].forEach((entry) => {
-        compileJS(entry, release);
-    });
-}
-
-/**
- * @param {{dest: string, input: string}} entry Entry object.
- * @param {boolean} release Enable release specific flags.
- */
-async function compileJS(entry, release) {
     await build({
         bundle: true,
         target: 'es2019',
         charset: 'utf8',
-        format: 'iife',
+        format: 'esm',
         write: true,
-        outfile: entry.dest,
-        entryPoints: [entry.input],
+        outdir: 'public',
+        entryPoints: ['src/index.ts', 'src/proxy.ts'],
+        splitting: true,
         banner: {js: '"use strict";'},
         logLevel: 'info',
         color: true,
