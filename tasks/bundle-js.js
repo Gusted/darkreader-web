@@ -10,13 +10,11 @@ async function bundleJS(release) {
         target: 'es2019',
         charset: 'utf8',
         format: 'esm',
-        write: true,
         outdir: 'public',
         entryPoints: ['src/index.ts', 'src/proxy.ts'],
         splitting: true,
         banner: {js: '"use strict";'},
         logLevel: 'info',
-        color: true,
         sourcemap: release ? false : 'inline',
         minify: release,
         define: process.env.VERCEL_ENV === 'development' ? {

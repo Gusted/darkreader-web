@@ -28,7 +28,7 @@ body {
     height: 70%;
     position: relative;
     text-indent: 5px;
-    width: 215px;
+    width: 415px;
 }
 .search-bar:hover {
     background-color: rgb(250, 250, 250);
@@ -41,7 +41,7 @@ body {
     border-color: transparent transparent transparent aquamarine;
     border-radius: 0px 25px 25px 0px;
     height: 70%;
-    left: 155px;
+    left: 355px;
     position: absolute;
 }
 .submit:hover {
