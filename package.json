@@ -14,7 +14,7 @@
     "vercel": "vercel dev"
   },
   "dependencies": {
-    "cors-anywhere-iframe": "1.1.1",
+    "cors-anywhere-iframe": "1.1.2",
     "esbuild": "0.9.2"
   },
   "devDependencies": {
