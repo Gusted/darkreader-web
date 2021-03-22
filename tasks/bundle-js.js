@@ -11,7 +11,7 @@ async function bundleJS(release) {
         charset: 'utf8',
         format: 'esm',
         outdir: 'public',
-        entryPoints: ['src/index.ts', 'src/proxy.ts'],
+        entryPoints: ['src/index.ts', 'src/proxy.ts', 'src/style.css'],
         splitting: true,
         banner: {js: '"use strict";'},
         logLevel: 'info',

@@ -16,7 +16,7 @@ async function main() {
             return;
         }
         files.forEach((file) => {
-            fs.copyFileSync(`src/ui/${file}`, `public/${file}`);
+            file !== "style.css" && fs.copyFileSync(`src/ui/${file}`, `public/${file}`);
         });
     });
     fs.readdir('assets', (err, files) => {

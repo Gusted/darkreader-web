@@ -28,7 +28,6 @@ export default function setupDarkReader() {
         newScript.textContent = '';
         IFrameDocument.head.append(newScript);
 
-        // TO-DO add this into cors-anywhere-iframe
         const proxyScript = IFrameDocument.createElement('script');
         proxyScript.type = 'module';
         proxyScript.src = `${origin}/proxy.js`;
