@@ -687,10 +687,10 @@ convert-source-map@^1.7.0:
   dependencies:
     safe-buffer "~5.1.1"
 
-cors-anywhere-iframe@1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/cors-anywhere-iframe/-/cors-anywhere-iframe-1.1.2.tgz#39fea57c17d6a81935c8e99dfdd11c805fc6a277"
-  integrity sha512-YTliboYpzoGONTOasNJ9br7iLyft4+iROEgdjdjfVZ2i0Q/Ee8yvsqGIH0CQ3JgjRNNgGRsjATVdMFBRl+98Og==
+cors-anywhere-iframe@1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/cors-anywhere-iframe/-/cors-anywhere-iframe-1.1.3.tgz#89875f29567452ab72ea62ce8b7f2dbd7e0c8390"
+  integrity sha512-KrQWJiKjz/4yG7DoLy59u40o0PI9/Gm0FjDMXWukdkbaHDg3/4ufctvSyzSglimIu0S52BBqHYVgH3Vs/ojhCg==
   dependencies:
     http-proxy "1.18.1"
 
