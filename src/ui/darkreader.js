@@ -1,14 +1,40 @@
 /**
- * Dark Reader v4.9.30
+ * Dark Reader v4.9.31
  * https://darkreader.org/
  */
  "use strict";
  var DarkReader = (() => {
    var __defProp = Object.defineProperty;
+   var __hasOwnProp = Object.prototype.hasOwnProperty;
+   var __getOwnPropSymbols = Object.getOwnPropertySymbols, __propIsEnum = Object.prototype.propertyIsEnumerable;
+   var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, {enumerable: !0, configurable: !0, writable: !0, value}) : obj[key] = value, __assign = (a, b) => {
+     for (var prop in b || (b = {}))
+       __hasOwnProp.call(b, prop) && __defNormalProp(a, prop, b[prop]);
+     if (__getOwnPropSymbols)
+       for (var prop of __getOwnPropSymbols(b))
+         __propIsEnum.call(b, prop) && __defNormalProp(a, prop, b[prop]);
+     return a;
+   };
    var __export = (target, all) => {
      for (var name in all)
        __defProp(target, name, {get: all[name], enumerable: !0});
    };
+   var __async = (__this, __arguments, generator) => new Promise((resolve, reject) => {
+     var fulfilled = (value) => {
+       try {
+         step(generator.next(value));
+       } catch (e) {
+         reject(e);
+       }
+     }, rejected = (value) => {
+       try {
+         step(generator.throw(value));
+       } catch (e) {
+         reject(e);
+       }
+     }, step = (result) => result.done ? resolve(result.value) : Promise.resolve(result.value).then(fulfilled, rejected);
+     step((generator = generator.apply(__this, __arguments)).next());
+   });
  
    // src/api/index.ts
    var api_exports = {};
@@ -41,28 +67,34 @@
    })();
  
    // src/utils/network.ts
-   async function getOKResponse(url, mimeType) {
-     let response = await fetch(url, {
-       cache: "force-cache",
-       credentials: "omit"
-     });
-     if (isFirefox && mimeType === "text/css" && url.startsWith("moz-extension://") && url.endsWith(".css"))
+   function getOKResponse(url, mimeType) {
+     return __async(this, null, function* () {
+       let response = yield fetch(url, {
+         cache: "force-cache",
+         credentials: "omit"
+       });
+       if (isFirefox && mimeType === "text/css" && url.startsWith("moz-extension://") && url.endsWith(".css"))
+         return response;
+       if (mimeType && !response.headers.get("Content-Type").startsWith(mimeType))
+         throw new Error(`Mime type mismatch when loading ${url}`);
+       if (!response.ok)
+         throw new Error(`Unable to load ${url} ${response.status} ${response.statusText}`);
        return response;
-     if (mimeType && !response.headers.get("Content-Type").startsWith(mimeType))
-       throw new Error(`Mime type mismatch when loading ${url}`);
-     if (!response.ok)
-       throw new Error(`Unable to load ${url} ${response.status} ${response.statusText}`);
-     return response;
+     });
    }
-   async function loadAsDataURL(url, mimeType) {
-     let response = await getOKResponse(url, mimeType);
-     return await readResponseAsDataURL(response);
+   function loadAsDataURL(url, mimeType) {
+     return __async(this, null, function* () {
+       let response = yield getOKResponse(url, mimeType);
+       return yield readResponseAsDataURL(response);
+     });
    }
-   async function readResponseAsDataURL(response) {
-     let blob = await response.blob();
-     return await new Promise((resolve) => {
-       let reader = new FileReader();
-       reader.onloadend = () => resolve(reader.result), reader.readAsDataURL(blob);
+   function readResponseAsDataURL(response) {
+     return __async(this, null, function* () {
+       let blob = yield response.blob();
+       return yield new Promise((resolve) => {
+         let reader = new FileReader();
+         reader.onloadend = () => resolve(reader.result), reader.readAsDataURL(blob);
+       });
      });
    }
  
@@ -130,63 +162,73 @@
    })();
  
    // src/api/fetch.ts
-   var throwCORSError = async (url) => Promise.reject(new Error([
-     "Embedded Dark Reader cannot access a cross-origin resource",
-     url,
-     "Overview your URLs and CORS policies or use",
-     "`DarkReader.setFetchMethod(fetch: (url) => Promise<Response>))`.",
-     "See if using `DarkReader.setFetchMethod(window.fetch)`",
-     "before `DarkReader.enable()` works."
-   ].join(" "))), fetcher = throwCORSError;
+   var throwCORSError = (url) => __async(void 0, null, function* () {
+     return Promise.reject(new Error([
+       "Embedded Dark Reader cannot access a cross-origin resource",
+       url,
+       "Overview your URLs and CORS policies or use",
+       "`DarkReader.setFetchMethod(fetch: (url) => Promise<Response>))`.",
+       "See if using `DarkReader.setFetchMethod(window.fetch)`",
+       "before `DarkReader.enable()` works."
+     ].join(" ")));
+   }), fetcher = throwCORSError;
    function setFetchMethod(fetch2) {
      fetch2 ? fetcher = fetch2 : fetcher = throwCORSError;
    }
-   async function callFetchMethod(url, responseType) {
-     return isIFrame ? await apiFetch(url, responseType) : await fetcher(url);
-   }
-   var counter = 0, resolvers = new Map();
-   async function apiFetch(url, responseType) {
-     return new Promise((resolve) => {
-       let id = `${++counter}-${window.location.href}`;
-       resolvers.set(id, resolve), window.top.postMessage({type: "fetch-api", url, id, responseType});
+   function callFetchMethod(url, responseType) {
+     return __async(this, null, function* () {
+       return isIFrame ? yield apiFetch(url, responseType) : yield fetcher(url);
      });
    }
-   isIFrame && window.addEventListener("message", async (event) => {
+   var counter = 0, resolvers = new Map();
+   function apiFetch(url, responseType) {
+     return __async(this, null, function* () {
+       return new Promise((resolve) => {
+         let id = `${++counter}-${window.location.href}`;
+         resolvers.set(id, resolve), window.top.postMessage({type: "fetch-api", url, id, responseType});
+       });
+     });
+   }
+   isIFrame && window.addEventListener("message", (event) => __async(void 0, null, function* () {
      let {type, data, id} = event.data;
      if (!(type !== "fetch-api-response" || event.origin !== window.location.origin)) {
        let resolve = resolvers.get(id);
        resolvers.delete(id), resolve && resolve(data);
      }
-   });
-   async function readResponseAsDataURL2(response) {
-     let blob = await response.blob();
-     return await new Promise((resolve) => {
-       let reader = new FileReader();
-       reader.onloadend = () => resolve(reader.result), reader.readAsDataURL(blob);
+   }));
+   function readResponseAsDataURL2(response) {
+     return __async(this, null, function* () {
+       let blob = yield response.blob();
+       return yield new Promise((resolve) => {
+         let reader = new FileReader();
+         reader.onloadend = () => resolve(reader.result), reader.readAsDataURL(blob);
+       });
      });
    }
-   isIFrame || window.addEventListener("message", async (event) => {
+   isIFrame || window.addEventListener("message", (event) => __async(void 0, null, function* () {
      let {type, url, id, responseType} = event.data;
      if (!(type !== "fetch-api" || event.origin !== window.location.origin)) {
-       let response = await fetcher(url), data;
-       responseType === "data-url" ? data = await readResponseAsDataURL2(response) : data = await response.text(), event.source.postMessage({type: "fetch-api-response", data, id}, event.origin);
+       let response = yield fetcher(url), data;
+       responseType === "data-url" ? data = yield readResponseAsDataURL2(response) : data = yield response.text(), event.source.postMessage({type: "fetch-api-response", data, id}, event.origin);
      }
-   });
+   }));
  
    // src/api/chrome.ts
    window.chrome || (window.chrome = {});
    chrome.runtime || (chrome.runtime = {});
    var messageListeners = new Set();
-   async function sendMessage(...args) {
-     if (args[0] && args[0].type === "fetch") {
-       let {id} = args[0];
-       try {
-         let {url, responseType} = args[0].data, response = await callFetchMethod(url, responseType), text;
-         typeof response == "string" ? text = response : responseType === "data-url" ? text = await readResponseAsDataURL(response) : text = await response.text(), messageListeners.forEach((cb) => cb({type: "fetch-response", data: text, error: null, id}));
-       } catch (err) {
-         console.error(err), messageListeners.forEach((cb) => cb({type: "fetch-response", data: null, err, id}));
+   function sendMessage(...args) {
+     return __async(this, null, function* () {
+       if (args[0] && args[0].type === "fetch") {
+         let {id} = args[0];
+         try {
+           let {url, responseType} = args[0].data, response = yield callFetchMethod(url, responseType), text;
+           typeof response == "string" ? text = response : responseType === "data-url" ? text = yield readResponseAsDataURL(response) : text = yield response.text(), messageListeners.forEach((cb) => cb({type: "fetch-response", data: text, error: null, id}));
+         } catch (err) {
+           console.error(err), messageListeners.forEach((cb) => cb({type: "fetch-response", data: null, err, id}));
+         }
        }
-     }
+     });
    }
    function addMessageListener(callback) {
      messageListeners.add(callback);
@@ -1032,7 +1074,7 @@
      if (theme.mode === 0)
        return modifyLightSchemeColor(rgb, theme);
      let pole = getBgPole(theme);
-     return modifyColorWithCache(rgb, {...theme, mode: 0}, modifyBgHSL, pole);
+     return modifyColorWithCache(rgb, __assign(__assign({}, theme), {mode: 0}), modifyBgHSL, pole);
    }
    var MIN_FG_LIGHTNESS = 0.55;
    function modifyBlueFgHue(hue) {
@@ -1060,7 +1102,7 @@
      if (theme.mode === 0)
        return modifyLightSchemeColor(rgb, theme);
      let pole = getFgPole(theme);
-     return modifyColorWithCache(rgb, {...theme, mode: 0}, modifyFgHSL, pole);
+     return modifyColorWithCache(rgb, __assign(__assign({}, theme), {mode: 0}), modifyFgHSL, pole);
    }
    function modifyBorderHSL({h, s, l, a}, poleFg, poleBg) {
      let isDark = l < 0.5, isNeutral = l < 0.2 || s < 0.24, hx = h, sx = s;
@@ -1072,7 +1114,7 @@
      if (theme.mode === 0)
        return modifyLightSchemeColor(rgb, theme);
      let poleFg = getFgPole(theme), poleBg = getBgPole(theme);
-     return modifyColorWithCache(rgb, {...theme, mode: 0}, modifyBorderHSL, poleFg, poleBg);
+     return modifyColorWithCache(rgb, __assign(__assign({}, theme), {mode: 0}), modifyBorderHSL, poleFg, poleBg);
    }
    function modifyShadowColor(rgb, filter2) {
      return modifyBackgroundColor(rgb, filter2);
@@ -1108,10 +1150,12 @@
  
    // src/inject/dynamic-theme/network.ts
    var counter2 = 0, resolvers2 = new Map(), rejectors = new Map();
-   async function bgFetch(request) {
-     return new Promise((resolve, reject) => {
-       let id = ++counter2;
-       resolvers2.set(id, resolve), rejectors.set(id, reject), chrome.runtime.sendMessage({type: "fetch", data: request, id});
+   function bgFetch(request) {
+     return __async(this, null, function* () {
+       return new Promise((resolve, reject) => {
+         let id = ++counter2;
+         resolvers2.set(id, resolve), rejectors.set(id, reject), chrome.runtime.sendMessage({type: "fetch", data: request, id});
+       });
      });
    }
    chrome.runtime.onMessage.addListener(({type, data, error, id}) => {
@@ -1122,25 +1166,30 @@
    });
  
    // src/inject/dynamic-theme/image.ts
-   async function getImageDetails(url) {
-     let dataURL;
-     url.startsWith("data:") ? dataURL = url : dataURL = await getImageDataURL(url);
-     let image = await urlToImage(dataURL), info = analyzeImage(image);
-     return {
-       src: url,
-       dataURL,
-       width: image.naturalWidth,
-       height: image.naturalHeight,
-       ...info
-     };
+   function getImageDetails(url) {
+     return __async(this, null, function* () {
+       let dataURL;
+       url.startsWith("data:") ? dataURL = url : dataURL = yield getImageDataURL(url);
+       let image = yield urlToImage(dataURL), info = analyzeImage(image);
+       return __assign({
+         src: url,
+         dataURL,
+         width: image.naturalWidth,
+         height: image.naturalHeight
+       }, info);
+     });
    }
-   async function getImageDataURL(url) {
-     return new URL(url).origin === location.origin ? await loadAsDataURL(url) : await bgFetch({url, responseType: "data-url"});
+   function getImageDataURL(url) {
+     return __async(this, null, function* () {
+       return new URL(url).origin === location.origin ? yield loadAsDataURL(url) : yield bgFetch({url, responseType: "data-url"});
+     });
    }
-   async function urlToImage(url) {
-     return new Promise((resolve, reject) => {
-       let image = new Image();
-       image.onload = () => resolve(image), image.onerror = () => reject(`Unable to load image ${url}`), image.src = url;
+   function urlToImage(url) {
+     return __async(this, null, function* () {
+       return new Promise((resolve, reject) => {
+         let image = new Image();
+         image.onload = () => resolve(image), image.onerror = () => reject(`Unable to load image ${url}`), image.src = url;
+       });
      });
    }
    var MAX_ANALIZE_PIXELS_COUNT = 32 * 32, canvas, context;
@@ -1225,7 +1274,7 @@
    function getSelectionColor(theme) {
      let backgroundColorSelection, foregroundColorSelection;
      if (theme.selectionColor === "auto")
-       backgroundColorSelection = modifyBackgroundColor({r: 0, g: 96, b: 212}, {...theme, grayscale: 0}), foregroundColorSelection = modifyForegroundColor({r: 255, g: 255, b: 255}, {...theme, grayscale: 0});
+       backgroundColorSelection = modifyBackgroundColor({r: 0, g: 96, b: 212}, __assign(__assign({}, theme), {grayscale: 0})), foregroundColorSelection = modifyForegroundColor({r: 255, g: 255, b: 255}, __assign(__assign({}, theme), {grayscale: 0}));
      else {
        let rgb = parse(theme.selectionColor), hsl = rgbToHSL(rgb);
        backgroundColorSelection = theme.selectionColor, hsl.l < 0.5 ? foregroundColorSelection = "#FFF" : foregroundColorSelection = "#000";
@@ -1244,7 +1293,7 @@
      if (theme.scrollbarColor === "auto")
        colorTrack = modifyBackgroundColor({r: 241, g: 241, b: 241}, theme), colorIcons = modifyForegroundColor({r: 96, g: 96, b: 96}, theme), colorThumb = modifyBackgroundColor({r: 176, g: 176, b: 176}, theme), colorThumbHover = modifyBackgroundColor({r: 144, g: 144, b: 144}, theme), colorThumbActive = modifyBackgroundColor({r: 96, g: 96, b: 96}, theme), colorCorner = modifyBackgroundColor({r: 255, g: 255, b: 255}, theme);
      else {
-       let rgb = parse(theme.scrollbarColor), hsl = rgbToHSL(rgb), isLight = hsl.l > 0.5, lighten = (lighter) => ({...hsl, l: clamp(hsl.l + lighter, 0, 1)}), darken = (darker) => ({...hsl, l: clamp(hsl.l - darker, 0, 1)});
+       let rgb = parse(theme.scrollbarColor), hsl = rgbToHSL(rgb), isLight = hsl.l > 0.5, lighten = (lighter) => __assign(__assign({}, hsl), {l: clamp(hsl.l + lighter, 0, 1)}), darken = (darker) => __assign(__assign({}, hsl), {l: clamp(hsl.l - darker, 0, 1)});
        colorTrack = hslToString(darken(0.4)), colorIcons = hslToString(isLight ? darken(0.4) : lighten(0.4)), colorThumb = hslToString(hsl), colorThumbHover = hslToString(lighten(0.1)), colorThumbActive = hslToString(lighten(0.2));
      }
      return lines.push("::-webkit-scrollbar {"), lines.push(`    background-color: ${colorTrack};`), lines.push(`    color: ${colorIcons};`), lines.push("}"), lines.push("::-webkit-scrollbar-thumb {"), lines.push(`    background-color: ${colorThumb};`), lines.push("}"), lines.push("::-webkit-scrollbar-thumb:hover {"), lines.push(`    background-color: ${colorThumbHover};`), lines.push("}"), lines.push("::-webkit-scrollbar-thumb:active {"), lines.push(`    background-color: ${colorThumbActive};`), lines.push("}"), lines.push("::-webkit-scrollbar-corner {"), lines.push(`    background-color: ${colorCorner};`), lines.push("}"), isFirefox && (lines.push("* {"), lines.push(`    scrollbar-color: ${colorThumb} ${colorTrack};`), lines.push("}")), lines.join(`
@@ -1311,7 +1360,7 @@
            let valueIndex = value.indexOf(match, index2);
            return index2 = valueIndex + match.length, {match, index: valueIndex};
          });
-       }, matches = getIndices(urls).map((i) => ({type: "url", ...i})).concat(getIndices(gradients).map((i) => ({type: "gradient", ...i}))).sort((a, b) => a.index - b.index), getGradientModifier = (gradient) => {
+       }, matches = getIndices(urls).map((i) => __assign({type: "url"}, i)).concat(getIndices(gradients).map((i) => __assign({type: "gradient"}, i))).sort((a, b) => a.index - b.index), getGradientModifier = (gradient) => {
          let match = gradient.match(/^(.*-gradient)\((.*)\)$/), type = match[1], content = match[2], partsRegex = /([^\(\),]+(\([^\(\)]*(\([^\(\)]*\)*[^\(\)]*)?\))?[^\(\),]*),?/g, colorStopRegex = /^(from|color-stop|to)\(([^\(\)]*?,\s*)?(.*?)\)$/, parts = getMatches(partsRegex, content, 1).map((part) => {
            part = part.trim();
            let rgb = tryParseColor(part);
@@ -1325,12 +1374,13 @@
          });
          return (filter2) => `${type}(${parts.map((modify) => modify(filter2)).join(", ")})`;
        }, getURLModifier = (urlValue) => {
+         var _a;
          if (shouldIgnoreImage(rule.selectorText, ignoreImageSelectors))
            return null;
-         let url = getCSSURLValue(urlValue), {parentStyleSheet} = rule, baseURL = parentStyleSheet.href ? getCSSBaseBath(parentStyleSheet.href) : parentStyleSheet.ownerNode?.baseURI || location.origin;
+         let url = getCSSURLValue(urlValue), {parentStyleSheet} = rule, baseURL = parentStyleSheet.href ? getCSSBaseBath(parentStyleSheet.href) : ((_a = parentStyleSheet.ownerNode) == null ? void 0 : _a.baseURI) || location.origin;
          url = getAbsoluteURL(baseURL, url);
          let absoluteValue = `url("${url}")`;
-         return async (filter2) => {
+         return (filter2) => __async(this, null, function* () {
            let imageDetails;
            if (imageDetailsCache.has(url))
              imageDetails = imageDetailsCache.get(url);
@@ -1338,20 +1388,20 @@
              try {
                if (awaitingForImageLoading.has(url)) {
                  let awaiters = awaitingForImageLoading.get(url);
-                 if (imageDetails = await new Promise((resolve) => awaiters.push(resolve)), !imageDetails)
+                 if (imageDetails = yield new Promise((resolve) => awaiters.push(resolve)), !imageDetails)
                    return null;
                } else
-                 awaitingForImageLoading.set(url, []), imageDetails = await getImageDetails(url), imageDetailsCache.set(url, imageDetails), awaitingForImageLoading.get(url).forEach((resolve) => resolve(imageDetails)), awaitingForImageLoading.delete(url);
+                 awaitingForImageLoading.set(url, []), imageDetails = yield getImageDetails(url), imageDetailsCache.set(url, imageDetails), awaitingForImageLoading.get(url).forEach((resolve) => resolve(imageDetails)), awaitingForImageLoading.delete(url);
                if (isCancelled())
                  return null;
              } catch (err) {
                return logWarn(err), awaitingForImageLoading.has(url) && (awaitingForImageLoading.get(url).forEach((resolve) => resolve(null)), awaitingForImageLoading.delete(url)), absoluteValue;
              }
            return getBgImageValue(imageDetails, filter2) || absoluteValue;
-         };
+         });
        }, getBgImageValue = (imageDetails, filter2) => {
          let {isDark, isLight, isTransparent, isLarge, width} = imageDetails, result;
-         return isDark && isTransparent && filter2.mode === 1 && !isLarge && width > 2 ? (logInfo(`Inverting dark image ${imageDetails.src}`), result = `url("${getFilteredImageDataURL(imageDetails, {...filter2, sepia: clamp(filter2.sepia + 10, 0, 100)})}")`) : isLight && !isTransparent && filter2.mode === 1 ? isLarge ? result = "none" : (logInfo(`Dimming light image ${imageDetails.src}`), result = `url("${getFilteredImageDataURL(imageDetails, filter2)}")`) : filter2.mode === 0 && isLight && !isLarge ? (logInfo(`Applying filter to image ${imageDetails.src}`), result = `url("${getFilteredImageDataURL(imageDetails, {...filter2, brightness: clamp(filter2.brightness - 10, 5, 200), sepia: clamp(filter2.sepia + 10, 0, 100)})}")`) : result = null, result;
+         return isDark && isTransparent && filter2.mode === 1 && !isLarge && width > 2 ? (logInfo(`Inverting dark image ${imageDetails.src}`), result = `url("${getFilteredImageDataURL(imageDetails, __assign(__assign({}, filter2), {sepia: clamp(filter2.sepia + 10, 0, 100)}))}")`) : isLight && !isTransparent && filter2.mode === 1 ? isLarge ? result = "none" : (logInfo(`Dimming light image ${imageDetails.src}`), result = `url("${getFilteredImageDataURL(imageDetails, filter2)}")`) : filter2.mode === 0 && isLight && !isLarge ? (logInfo(`Applying filter to image ${imageDetails.src}`), result = `url("${getFilteredImageDataURL(imageDetails, __assign(__assign({}, filter2), {brightness: clamp(filter2.brightness - 10, 5, 200), sepia: clamp(filter2.sepia + 10, 0, 100)}))}")`) : result = null, result;
        }, modifiers = [], index = 0;
        return matches.forEach(({match, type, index: matchStart}, i) => {
          let prefixStart = index, matchEnd = matchStart + match.length;
@@ -1425,7 +1475,9 @@
        }), this.unknownColorVars.forEach((v) => {
          this.unknownBgVars.has(v) ? (this.unknownColorVars.delete(v), this.unknownBgVars.delete(v), this.resolveVariableType(v, VAR_TYPE_BGCOLOR)) : this.isVarType(v, VAR_TYPE_BGCOLOR | VAR_TYPE_TEXTCOLOR | VAR_TYPE_BORDERCOLOR) ? this.unknownColorVars.delete(v) : this.undefinedVars.add(v);
        }), this.unknownBgVars.forEach((v) => {
-         this.isVarType(v, VAR_TYPE_BGCOLOR | VAR_TYPE_BGIMG) ? this.unknownBgVars.delete(v) : this.undefinedVars.add(v);
+         this.findVarRef(v, (ref) => this.unknownColorVars.has(ref)) != null ? this.itarateVarRefs(v, (ref) => {
+           this.resolveVariableType(ref, VAR_TYPE_BGCOLOR);
+         }) : this.isVarType(v, VAR_TYPE_BGCOLOR | VAR_TYPE_BGIMG) ? this.unknownBgVars.delete(v) : this.undefinedVars.add(v);
        }), this.changedTypeVars.forEach((varName) => {
          this.typeChangeSubscriptions.has(varName) && this.typeChangeSubscriptions.get(varName).forEach((callback) => {
            callback();
@@ -1987,12 +2039,11 @@
          return;
        renderId++;
        function setRule(target, index, rule) {
-         let {selector, declarations} = rule;
-         target.insertRule(`${selector} {}`, index);
-         let style = target.cssRules[index].style;
-         declarations.forEach(({property, value, important, sourceValue}) => {
-           style.setProperty(property, value ?? sourceValue, important ? "important" : "");
-         });
+         let {selector, declarations} = rule, getDeclarationText = (dec) => {
+           let {property, value, important, sourceValue} = dec;
+           return `${property}: ${value == null ? sourceValue : value}${important ? " !important" : ""};`;
+         }, ruleText = `${selector} { ${declarations.map(getDeclarationText).join(" ")} }`;
+         target.insertRule(ruleText, index);
        }
        let asyncDeclarations = new Map(), varDeclarations = new Map(), asyncDeclarationCounter = 0, varDeclarationCounter = 0, rootReadyGroup = {rule: null, rules: [], isGroup: !0}, groupRefs = new WeakMap();
        function getGroup(rule) {
@@ -2115,39 +2166,41 @@
        syncStyle = element instanceof SVGStyleElement ? document.createElementNS("http://www.w3.org/2000/svg", "style") : document.createElement("style"), syncStyle.classList.add("darkreader"), syncStyle.classList.add("darkreader--sync"), syncStyle.media = "screen", !isChromium && element.title && (syncStyle.title = element.title), syncStyleSet.add(syncStyle);
      }
      let isLoadingRules = !1, wasLoadingError = !1;
-     async function getRulesAsync() {
-       let cssText, cssBasePath;
-       if (element instanceof HTMLLinkElement) {
-         let [cssRules, accessError] = getRulesOrError();
-         if (accessError && logWarn(accessError), !cssRules && !accessError && !isSafari || isSafari && !element.sheet || isStillLoadingError(accessError)) {
-           try {
-             await linkLoading(element);
-           } catch (err) {
-             logWarn(err), wasLoadingError = !0;
+     function getRulesAsync() {
+       return __async(this, null, function* () {
+         let cssText, cssBasePath;
+         if (element instanceof HTMLLinkElement) {
+           let [cssRules, accessError] = getRulesOrError();
+           if (accessError && logWarn(accessError), !cssRules && !accessError && !isSafari || isSafari && !element.sheet || isStillLoadingError(accessError)) {
+             try {
+               yield linkLoading(element);
+             } catch (err) {
+               logWarn(err), wasLoadingError = !0;
+             }
+             if (cancelAsyncOperations)
+               return null;
+             [cssRules, accessError] = getRulesOrError(), accessError && logWarn(accessError);
            }
-           if (cancelAsyncOperations)
+           if (cssRules != null)
+             return cssRules;
+           if (cssText = yield loadText(element.href), cssBasePath = getCSSBaseBath(element.href), cancelAsyncOperations)
              return null;
-           [cssRules, accessError] = getRulesOrError(), accessError && logWarn(accessError);
-         }
-         if (cssRules != null)
-           return cssRules;
-         if (cssText = await loadText(element.href), cssBasePath = getCSSBaseBath(element.href), cancelAsyncOperations)
+         } else if (containsCSSImport())
+           cssText = element.textContent.trim(), cssBasePath = getCSSBaseBath(location.href);
+         else
            return null;
-       } else if (containsCSSImport())
-         cssText = element.textContent.trim(), cssBasePath = getCSSBaseBath(location.href);
-       else
-         return null;
-       if (cssText) {
-         try {
-           let fullCSSText = await replaceCSSImports(cssText, cssBasePath);
-           corsCopy = createCORSCopy(element, fullCSSText);
-         } catch (err) {
-           logWarn(err);
+         if (cssText) {
+           try {
+             let fullCSSText = yield replaceCSSImports(cssText, cssBasePath);
+             corsCopy = createCORSCopy(element, fullCSSText);
+           } catch (err) {
+             logWarn(err);
+           }
+           if (corsCopy)
+             return corsCopyPositionWatcher = watchForNodePosition(corsCopy, "prev-sibling"), corsCopy.sheet.cssRules;
          }
-         if (corsCopy)
-           return corsCopyPositionWatcher = watchForNodePosition(corsCopy, "prev-sibling"), corsCopy.sheet.cssRules;
-       }
-       return null;
+         return null;
+       });
      }
      function details() {
        let rules = getRulesSync();
@@ -2270,40 +2323,46 @@
        restore
      };
    }
-   async function linkLoading(link) {
-     return new Promise((resolve, reject) => {
-       let cleanUp = () => {
-         link.removeEventListener("load", onLoad), link.removeEventListener("error", onError);
-       }, onLoad = () => {
-         cleanUp(), resolve();
-       }, onError = () => {
-         cleanUp(), reject(`Link loading failed ${link.href}`);
-       };
-       link.addEventListener("load", onLoad), link.addEventListener("error", onError);
+   function linkLoading(link) {
+     return __async(this, null, function* () {
+       return new Promise((resolve, reject) => {
+         let cleanUp = () => {
+           link.removeEventListener("load", onLoad), link.removeEventListener("error", onError);
+         }, onLoad = () => {
+           cleanUp(), resolve();
+         }, onError = () => {
+           cleanUp(), reject(`Link loading failed ${link.href}`);
+         };
+         link.addEventListener("load", onLoad), link.addEventListener("error", onError);
+       });
      });
    }
    function getCSSImportURL(importDeclaration) {
      return getCSSURLValue(importDeclaration.substring(8).replace(/;$/, ""));
    }
-   async function loadText(url) {
-     return url.startsWith("data:") ? await (await fetch(url)).text() : await bgFetch({url, responseType: "text", mimeType: "text/css"});
+   function loadText(url) {
+     return __async(this, null, function* () {
+       return url.startsWith("data:") ? yield (yield fetch(url)).text() : yield bgFetch({url, responseType: "text", mimeType: "text/css"});
+     });
    }
-   async function replaceCSSImports(cssText, basePath, cache = new Map()) {
-     cssText = removeCSSComments(cssText), cssText = replaceCSSFontFace(cssText), cssText = replaceCSSRelativeURLsWithAbsolute(cssText, basePath);
-     let importMatches = getMatches(cssImportRegex, cssText);
-     for (let match of importMatches) {
-       let importURL = getCSSImportURL(match), absoluteURL = getAbsoluteURL(basePath, importURL), importedCSS;
-       if (cache.has(absoluteURL))
-         importedCSS = cache.get(absoluteURL);
-       else
-         try {
-           importedCSS = await loadText(absoluteURL), cache.set(absoluteURL, importedCSS), importedCSS = await replaceCSSImports(importedCSS, getCSSBaseBath(absoluteURL), cache);
-         } catch (err) {
-           logWarn(err), importedCSS = "";
-         }
-       cssText = cssText.split(match).join(importedCSS);
-     }
-     return cssText = cssText.trim(), cssText;
+   function replaceCSSImports(_0, _1) {
+     return __async(this, arguments, function* (cssText, basePath, cache = new Map()) {
+       cssText = removeCSSComments(cssText), cssText = replaceCSSFontFace(cssText), cssText = replaceCSSRelativeURLsWithAbsolute(cssText, basePath);
+       let importMatches = getMatches(cssImportRegex, cssText);
+       for (let match of importMatches) {
+         let importURL = getCSSImportURL(match), absoluteURL = getAbsoluteURL(basePath, importURL), importedCSS;
+         if (cache.has(absoluteURL))
+           importedCSS = cache.get(absoluteURL);
+         else
+           try {
+             importedCSS = yield loadText(absoluteURL), cache.set(absoluteURL, importedCSS), importedCSS = yield replaceCSSImports(importedCSS, getCSSBaseBath(absoluteURL), cache);
+           } catch (err) {
+             logWarn(err), importedCSS = "";
+           }
+         cssText = cssText.split(match).join(importedCSS);
+       }
+       return cssText = cssText.trim(), cssText;
+     });
    }
    function createCORSCopy(srcElement, cssText) {
      if (!cssText)
@@ -2333,19 +2392,21 @@
    function handleIsDefined(e) {
      canOptimizeUsingProxy2 = !0, resolvers3.has(e.detail.tag) && resolvers3.get(e.detail.tag)();
    }
-   async function customElementsWhenDefined(tag) {
-     return new Promise((resolve) => {
-       if (window.customElements && typeof customElements.whenDefined == "function")
-         customElements.whenDefined(tag).then(resolve);
-       else if (canOptimizeUsingProxy2)
-         resolvers3.set(tag, resolve), document.dispatchEvent(new CustomEvent("__darkreader__addUndefinedResolver", {detail: {tag}}));
-       else {
-         let checkIfDefined = () => {
-           let elements = undefinedGroups.get(tag);
-           elements && elements.size > 0 && (elements.values().next().value.matches(":defined") ? resolve() : requestAnimationFrame(checkIfDefined));
-         };
-         requestAnimationFrame(checkIfDefined);
-       }
+   function customElementsWhenDefined(tag) {
+     return __async(this, null, function* () {
+       return new Promise((resolve) => {
+         if (window.customElements && typeof customElements.whenDefined == "function")
+           customElements.whenDefined(tag).then(resolve);
+         else if (canOptimizeUsingProxy2)
+           resolvers3.set(tag, resolve), document.dispatchEvent(new CustomEvent("__darkreader__addUndefinedResolver", {detail: {tag}}));
+         else {
+           let checkIfDefined = () => {
+             let elements = undefinedGroups.get(tag);
+             elements && elements.size > 0 && (elements.values().next().value.matches(":defined") ? resolve() : requestAnimationFrame(checkIfDefined));
+           };
+           requestAnimationFrame(checkIfDefined);
+         }
+       });
      });
    }
    function watchWhenCustomElementsDefined(callback) {
@@ -2518,7 +2579,7 @@
    var INSTANCE_ID = generateUID(), styleManagers = new Map(), adoptedStyleManagers = [], filter = null, fixes = null, isIFrame2 = null, ignoredImageAnalysisSelectors = null, ignoredInlineSelectors = null;
    function createOrUpdateStyle(className, root = document.head || document) {
      let element = root.querySelector(`.${className}`);
-     return element || (element = document.createElement("style"), element.classList.add("darkreader"), element.classList.add(className), element.media = "screen"), element;
+     return element || (element = document.createElement("style"), element.classList.add("darkreader"), element.classList.add(className), element.media = "screen", element.textContent = ""), element;
    }
    function createOrUpdateScript(className, root = document.head || document) {
      let element = root.querySelector(`.${className}`);
@@ -2541,10 +2602,9 @@
      let invertStyle = createOrUpdateStyle("darkreader--invert");
      fixes && Array.isArray(fixes.invert) && fixes.invert.length > 0 ? invertStyle.textContent = [
        `${fixes.invert.join(", ")} {`,
-       `    filter: ${getCSSFilterValue({
-         ...filter,
+       `    filter: ${getCSSFilterValue(__assign(__assign({}, filter), {
          contrast: filter.mode === 0 ? filter.contrast : clamp(filter.contrast - 10, 0, 100)
-       })} !important;`,
+       }))} !important;`,
        "}"
      ].join(`
  `) : invertStyle.textContent = "", document.head.insertBefore(invertStyle, textStyle.nextSibling), setupNodePositionWatcher(invertStyle, "invert");
@@ -2721,7 +2781,7 @@
    function cleanDynamicThemeCache() {
      variablesStore.clear(), parsedURLCache.clear(), stopWatchingForDocumentVisibility(), cancelRendering(), stopWatchingForUpdates(), cleanModificationCache();
    }
-   if (__API__) {
+   {
      let addEnableDynamicTheme = (e) => {
        createOrUpdateDynamicTheme(e.detail.theme, e.detail.fixes, !0);
      };
@@ -2730,14 +2790,16 @@
  
    // src/inject/dynamic-theme/css-collection.ts
    var blobRegex = /url\(\"(blob\:.*?)\"\)/g;
-   async function replaceBlobs(text) {
-     let promises = [];
-     getMatches(blobRegex, text, 1).forEach((url) => {
-       let promise = loadAsDataURL(url);
-       promises.push(promise);
+   function replaceBlobs(text) {
+     return __async(this, null, function* () {
+       let promises = [];
+       getMatches(blobRegex, text, 1).forEach((url) => {
+         let promise = loadAsDataURL(url);
+         promises.push(promise);
+       });
+       let data = yield Promise.all(promises);
+       return text.replace(blobRegex, () => `url("${data.shift()}")`);
      });
-     let data = await Promise.all(promises);
-     return text.replace(blobRegex, () => `url("${data.shift()}")`);
    }
    var banner = `/*
                          _______
@@ -2759,31 +2821,33 @@
  |__|   \\__\\____/__/      \\__\\_______/ |______|__|   \\__\\
                  https://darkreader.org
  */`;
-   async function collectCSS() {
-     let css = [banner];
-     function addStaticCSS(selector, comment) {
-       let staticStyle = document.querySelector(selector);
-       staticStyle && staticStyle.textContent && (css.push(`/* ${comment} */`), css.push(staticStyle.textContent), css.push(""));
-     }
-     addStaticCSS(".darkreader--fallback", "Fallback Style"), addStaticCSS(".darkreader--user-agent", "User-Agent Style"), addStaticCSS(".darkreader--text", "Text Style"), addStaticCSS(".darkreader--invert", "Invert Style"), addStaticCSS(".darkreader--variables", "Variables Style");
-     let modifiedCSS = [];
-     if (document.querySelectorAll(".darkreader--sync").forEach((element) => {
-       forEach(element.sheet.cssRules, (rule) => {
-         rule && rule.cssText && modifiedCSS.push(rule.cssText);
-       });
-     }), modifiedCSS.length != 0) {
-       let formattedCSS = formatCSS(modifiedCSS.join(`
+   function collectCSS() {
+     return __async(this, null, function* () {
+       let css = [banner];
+       function addStaticCSS(selector, comment) {
+         let staticStyle = document.querySelector(selector);
+         staticStyle && staticStyle.textContent && (css.push(`/* ${comment} */`), css.push(staticStyle.textContent), css.push(""));
+       }
+       addStaticCSS(".darkreader--fallback", "Fallback Style"), addStaticCSS(".darkreader--user-agent", "User-Agent Style"), addStaticCSS(".darkreader--text", "Text Style"), addStaticCSS(".darkreader--invert", "Invert Style"), addStaticCSS(".darkreader--variables", "Variables Style");
+       let modifiedCSS = [];
+       if (document.querySelectorAll(".darkreader--sync").forEach((element) => {
+         forEach(element.sheet.cssRules, (rule) => {
+           rule && rule.cssText && modifiedCSS.push(rule.cssText);
+         });
+       }), modifiedCSS.length != 0) {
+         let formattedCSS = formatCSS(modifiedCSS.join(`
  `));
-       css.push("/* Modified CSS */"), css.push(await replaceBlobs(formattedCSS)), css.push("");
-     }
-     return addStaticCSS(".darkreader--override", "Override Style"), css.join(`
+         css.push("/* Modified CSS */"), css.push(yield replaceBlobs(formattedCSS)), css.push("");
+       }
+       return addStaticCSS(".darkreader--override", "Override Style"), css.join(`
  `);
+     });
    }
  
    // src/api/index.ts
    var isDarkReaderEnabled = !1, usesIFrames = !1;
    function enable(themeOptions = {}, fixes2 = null) {
-     let theme = {...DEFAULT_THEME, ...themeOptions};
+     let theme = __assign(__assign({}, DEFAULT_THEME), themeOptions);
      if (theme.engine !== theme_engines_default.dynamicTheme)
        throw new Error("Theme engine is not supported.");
      store = {theme, fixes: fixes2}, createOrUpdateDynamicTheme(theme, fixes2, isIFrame), isDarkReaderEnabled = !0;
@@ -2806,10 +2870,12 @@
      darkScheme.matches ? enable(store.theme, store.fixes) : disable();
    }
    function auto(themeOptions = {}, fixes2 = null) {
-     themeOptions ? (store = {theme: {...DEFAULT_THEME, ...themeOptions}, fixes: fixes2}, handleColorScheme(), isMatchMediaChangeEventListenerSupported ? darkScheme.addEventListener("change", handleColorScheme) : darkScheme.addListener(handleColorScheme)) : (isMatchMediaChangeEventListenerSupported ? darkScheme.removeEventListener("change", handleColorScheme) : darkScheme.removeListener(handleColorScheme), disable());
+     themeOptions ? (store = {theme: __assign(__assign({}, DEFAULT_THEME), themeOptions), fixes: fixes2}, handleColorScheme(), isMatchMediaChangeEventListenerSupported ? darkScheme.addEventListener("change", handleColorScheme) : darkScheme.addListener(handleColorScheme)) : (isMatchMediaChangeEventListenerSupported ? darkScheme.removeEventListener("change", handleColorScheme) : darkScheme.removeListener(handleColorScheme), disable());
    }
-   async function exportGeneratedCSS() {
-     return await collectCSS();
+   function exportGeneratedCSS() {
+     return __async(this, null, function* () {
+       return yield collectCSS();
+     });
    }
    function setupIFrameListener(listener) {
      if (!listener || listener.length !== 1)
