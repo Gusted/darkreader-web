@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "cors-anywhere-iframe": "1.2.1",
-    "esbuild": "0.11.9"
+    "esbuild": "0.11.12"
   },
   "devDependencies": {
     "@types/node": "14.14.37",
